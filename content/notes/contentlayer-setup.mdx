@@ -1,0 +1,335 @@
+---
+slug: contentlayer-setup
+title: Setting Up Contentlayer with Next.js for Type-Safe Content
+summary: Learn how to configure Contentlayer with Next.js for managing MDX content with full TypeScript support and automatic type generation.
+date: 2024-01-10
+tags:
+  - Contentlayer
+  - Next.js
+  - TypeScript
+  - MDX
+  - Content Management
+---
+
+# Setting Up Contentlayer with Next.js for Type-Safe Content
+
+Contentlayer transforms your content into type-safe data, making it perfect for blogs, documentation, and portfolio sites. Here's how to set it up with Next.js.
+
+## Installation
+
+Install the required packages:
+
+```bash
+npm install contentlayer next-contentlayer
+npm install -D @types/mdx
+```
+
+## Configuration
+
+### 1. Create Contentlayer Config
+
+Create `contentlayer.config.ts` in your project root:
+
+```typescript
+import { defineDocumentType, makeSource } from 'contentlayer/source-files'
+
+export const Post = defineDocumentType(() => ({
+  name: 'Post',
+  filePathPattern: `**/*.mdx`,
+  contentType: 'mdx',
+  fields: {
+    title: {
+      type: 'string',
+      description: 'The title of the post',
+      required: true,
+    },
+    date: {
+      type: 'date',
+      description: 'The date of the post',
+      required: true,
+    },
+    summary: {
+      type: 'string',
+      description: 'A short summary of the post',
+      required: true,
+    },
+    tags: {
+      type: 'list',
+      of: { type: 'string' },
+      description: 'Tags for the post',
+    },
+  },
+  computedFields: {
+    url: {
+      type: 'string',
+      resolve: (post) => `/posts/${post._raw.flattenedPath}`,
+    },
+    slug: {
+      type: 'string',
+      resolve: (post) => post._raw.flattenedPath,
+    },
+  },
+}))
+
+export default makeSource({
+  contentDirPath: './content',
+  documentTypes: [Post],
+  mdx: {
+    remarkPlugins: [],
+    rehypePlugins: [],
+  },
+})
+```
+
+### 2. Update Next.js Config
+
+Modify `next.config.js`:
+
+```javascript
+const { withContentlayer } = require('next-contentlayer')
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    serverComponentsExternalPackages: ['@contentlayer/core']
+  }
+}
+
+module.exports = withContentlayer(nextConfig)
+```
+
+### 3. Update TypeScript Config
+
+Add Contentlayer paths to `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "contentlayer/generated": ["./.contentlayer/generated"]
+    }
+  },
+  "include": [
+    ".contentlayer/generated"
+  ]
+}
+```
+
+## Content Structure
+
+### Directory Layout
+```
+content/
+  posts/
+    my-first-post.mdx
+    web-performance.mdx
+  projects/
+    portfolio-site.mdx
+```
+
+### Sample MDX File
+
+```mdx
+---
+title: Getting Started with Contentlayer
+date: 2024-01-10
+summary: Learn how to use Contentlayer for type-safe content management
+tags:
+  - contentlayer
+  - nextjs
+  - typescript
+---
+
+# Getting Started with Contentlayer
+
+This is the content of your post written in MDX.
+
+## Features
+
+- Type safety
+- Auto-generated types
+- Hot reloading
+- Plugin ecosystem
+
+```tsx
+// You can use JSX components
+function Example() {
+  return <div>Hello from MDX!</div>
+}
+```
+
+Regular markdown **still works** perfectly!
+```
+
+## Using in Components
+
+### Listing All Posts
+
+```tsx
+import { allPosts } from 'contentlayer/generated'
+import { compareDesc } from 'date-fns'
+
+export default function BlogPage() {
+  const posts = allPosts.sort((a, b) => 
+    compareDesc(new Date(a.date), new Date(b.date))
+  )
+
+  return (
+    <div>
+      {posts.map((post) => (
+        <article key={post._id}>
+          <h2>{post.title}</h2>
+          <p>{post.summary}</p>
+          <time>{post.date}</time>
+        </article>
+      ))}
+    </div>
+  )
+}
+```
+
+### Single Post Page
+
+```tsx
+import { allPosts } from 'contentlayer/generated'
+import { getMDXComponent } from 'next-contentlayer/hooks'
+import { notFound } from 'next/navigation'
+
+interface PostPageProps {
+  params: { slug: string }
+}
+
+export default function PostPage({ params }: PostPageProps) {
+  const post = allPosts.find((post) => post.slug === params.slug)
+  
+  if (!post) notFound()
+
+  const MDXContent = getMDXComponent(post.body.code)
+
+  return (
+    <article>
+      <h1>{post.title}</h1>
+      <time>{post.date}</time>
+      <div>
+        <MDXContent />
+      </div>
+    </article>
+  )
+}
+
+export async function generateStaticParams() {
+  return allPosts.map((post) => ({
+    slug: post.slug,
+  }))
+}
+```
+
+## Advanced Features
+
+### Custom MDX Components
+
+```tsx
+const mdxComponents = {
+  h1: ({ children }) => (
+    <h1 className="text-3xl font-bold mb-4">{children}</h1>
+  ),
+  code: ({ children }) => (
+    <code className="bg-gray-100 px-1 rounded">{children}</code>
+  ),
+}
+
+// In your post component
+<MDXContent components={mdxComponents} />
+```
+
+### Plugin Integration
+
+```typescript
+// contentlayer.config.ts
+import remarkGfm from 'remark-gfm'
+import rehypeSlug from 'rehype-slug'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
+
+export default makeSource({
+  // ...
+  mdx: {
+    remarkPlugins: [remarkGfm],
+    rehypePlugins: [
+      rehypeSlug,
+      [rehypeAutolinkHeadings, { behavior: 'wrap' }]
+    ],
+  },
+})
+```
+
+### Validation
+
+Add custom validation to your fields:
+
+```typescript
+export const Post = defineDocumentType(() => ({
+  name: 'Post',
+  fields: {
+    title: {
+      type: 'string',
+      required: true,
+      validation: (title) => {
+        if (title.length > 100) {
+          throw new Error('Title must be less than 100 characters')
+        }
+      }
+    },
+    // ...
+  },
+}))
+```
+
+## Development Workflow
+
+### 1. Content Hot Reloading
+Contentlayer watches your content files and regenerates types automatically.
+
+### 2. Type Safety
+All your content is fully typed:
+
+```typescript
+import { Post } from 'contentlayer/generated'
+
+function PostCard({ post }: { post: Post }) {
+  // post.title, post.date, etc. are all typed!
+  return (
+    <div>
+      <h3>{post.title}</h3>
+      <p>{post.summary}</p>
+    </div>
+  )
+}
+```
+
+### 3. Build Integration
+Content is processed at build time, ensuring optimal performance.
+
+## Best Practices
+
+1. **Consistent Frontmatter**: Use consistent field names across all content
+2. **Computed Fields**: Leverage computed fields for derived data
+3. **Validation**: Add validation for critical fields
+4. **Plugin Chain**: Keep plugins minimal for better performance
+5. **Type Safety**: Always use generated types in components
+
+## Troubleshooting
+
+### Common Issues
+
+**Build Errors**: Ensure `.contentlayer` is in `.gitignore`
+```
+.contentlayer/
+```
+
+**Type Errors**: Restart TypeScript server after schema changes
+
+**Plugin Conflicts**: Test plugins individually to identify conflicts
+
+Contentlayer provides an excellent developer experience for content-driven sites with the benefits of type safety and modern tooling.

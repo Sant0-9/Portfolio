@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --foreground: 225 18% 89%;
+    --border: 38 12% 20%;
+    --input: 38 12% 20%;
+    --ring: 225 18% 89%;
+    --primary: 225 18% 89%;
+    --primary-foreground: 38 15% 15%;
+    --secondary: 38 12% 20%;
+    --secondary-foreground: 225 18% 89%;
+    --accent: 38 12% 20%;
+    --accent-foreground: 225 18% 89%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --popover: 38 15% 15%;
+    --popover-foreground: 225 18% 89%;
+    --card: 38 15% 15%;
+    --card-foreground: 225 18% 89%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-text font-sans antialiased;
+    min-height: 100vh;
+  }
+  
+  /* Skip link styles */
+  .skip-link {
+    @apply absolute left-0 top-0 z-50 -translate-y-full bg-panel px-4 py-2 text-text transition-transform focus:translate-y-0;
+  }
+  
+  /* Animation performance optimization */
+  @media (prefers-reduced-motion: no-preference) {
+    * {
+      will-change: auto;
+    }
+  }
+  
+  /* Ensure smooth animations */
+  [data-animated] {
+    backface-visibility: hidden;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+  }
+  
+  /* 3D transform utilities for flip cards */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  
+  /* Screen reader only content */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
