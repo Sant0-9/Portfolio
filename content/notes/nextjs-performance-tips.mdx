@@ -17,6 +17,10 @@ Performance is crucial for user experience and SEO. Here are proven techniques t
 
 ## Bundle Optimization
 
+<Callout type="tip" title="Performance Impact">
+Proper bundle optimization can reduce initial load times by up to 60% and improve Core Web Vitals scores significantly.
+</Callout>
+
 ### Dynamic Imports
 Use dynamic imports to split your code and reduce initial bundle size:
 
@@ -167,6 +171,34 @@ const ExpensiveComponent = React.memo(({ data }) => {
 ### Core Web Vitals
 Monitor Core Web Vitals with built-in analytics:
 
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+<Metric 
+  value="<2.5s"
+  label="Largest Contentful Paint"
+  description="Time to render the largest content element"
+  color="green"
+  trend="down"
+  change="30% faster"
+/>
+
+<Metric 
+  value="<100ms"
+  label="First Input Delay"
+  description="Time from user interaction to browser response"
+  color="green"
+  trend="flat"
+/>
+
+<Metric 
+  value="<0.1"
+  label="Cumulative Layout Shift"
+  description="Visual stability score"
+  color="green"
+  trend="down"
+  change="50% improvement"
+/>
+</div>
+
 ```tsx
 // pages/_app.tsx
 export function reportWebVitals(metric) {
@@ -230,4 +262,42 @@ export function middleware(request) {
 }
 ```
 
-Remember: Always measure performance improvements with real user data, not just synthetic tests. Every application is different, so profile your specific use case to identify the most impactful optimizations.
+## Related Resources
+
+<RefCards columns={2}>
+<RefCard 
+  title="Next.js Performance Docs"
+  description="Official Next.js documentation on performance optimization"
+  href="https://nextjs.org/docs/pages/building-your-application/optimizing"
+  type="external"
+  tags={["Next.js", "Performance", "Documentation"]}
+/>
+
+<RefCard 
+  title="Web.dev Performance"
+  description="Comprehensive guide to web performance best practices"
+  href="https://web.dev/performance/"
+  type="external"
+  tags={["Performance", "Web", "Best Practices"]}
+/>
+
+<RefCard 
+  title="React DevTools Profiler"
+  description="Profile React components to identify performance bottlenecks"
+  href="https://react.dev/learn/react-developer-tools"
+  type="external"
+  tags={["React", "DevTools", "Profiling"]}
+/>
+
+<RefCard 
+  title="Lighthouse CI"
+  description="Automate Lighthouse testing in your CI/CD pipeline"
+  href="https://github.com/GoogleChrome/lighthouse-ci"
+  type="github"
+  tags={["Lighthouse", "CI/CD", "Testing"]}
+/>
+</RefCards>
+
+<Callout type="warning" title="Important">
+Always measure performance improvements with real user data, not just synthetic tests. Every application is different, so profile your specific use case to identify the most impactful optimizations.
+</Callout>

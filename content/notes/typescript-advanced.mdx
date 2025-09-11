@@ -1,0 +1,36 @@
+---
+slug: typescript-advanced
+title: Advanced TypeScript Patterns
+summary: Deep dive into advanced TypeScript features including generics, conditional types, mapped types, and utility types for building robust applications.
+date: 2024-01-05
+tags:
+  - TypeScript
+  - JavaScript
+  - Types
+  - Advanced
+---
+
+# Advanced TypeScript Patterns
+
+Master advanced TypeScript concepts to write more type-safe and maintainable code.
+
+## Generic Constraints
+
+```typescript
+interface Lengthwise {
+  length: number
+}
+
+function loggingIdentity<T extends Lengthwise>(arg: T): T {
+  console.log(arg.length)
+  return arg
+}
+```
+
+<Metric 
+  value="100%"
+  label="Type Safety"
+  description="Catch errors at compile time"
+  color="green"
+  trend="up"
+/>

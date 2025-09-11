@@ -1,0 +1,121 @@
+---
+slug: react-hooks-guide
+title: React Hooks Complete Guide
+summary: A comprehensive guide to React Hooks including useState, useEffect, useContext, and custom hooks with practical examples and best practices.
+date: 2024-01-10
+tags:
+  - React
+  - Hooks
+  - JavaScript
+  - Frontend
+---
+
+# React Hooks Complete Guide
+
+React Hooks revolutionized how we write React components by allowing us to use state and other React features in functional components. This guide covers all the essential hooks with practical examples.
+
+<Callout type="info" title="Prerequisites">
+This guide assumes basic knowledge of React and JavaScript ES6+ features.
+</Callout>
+
+## useState Hook
+
+The most commonly used hook for managing component state.
+
+```tsx
+import { useState } from 'react'
+
+function Counter() {
+  const [count, setCount] = useState(0)
+  
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>
+        Increment
+      </button>
+    </div>
+  )
+}
+```
+
+<Pills>
+<Pill variant="success">Simple</Pill>
+<Pill variant="info">Functional</Pill>
+<Pill variant="default">Local State</Pill>
+</Pills>
+
+## useEffect Hook
+
+Handle side effects in functional components.
+
+<Metric 
+  value="3 patterns"
+  label="Common useEffect Uses"
+  description="Data fetching, subscriptions, and DOM manipulation"
+  color="blue"
+/>
+
+### Data Fetching Example
+
+```tsx
+import { useState, useEffect } from 'react'
+
+function UserProfile({ userId }) {
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+  
+  useEffect(() => {
+    fetch(`/api/users/${userId}`)
+      .then(res => res.json())
+      .then(userData => {
+        setUser(userData)
+        setLoading(false)
+      })
+  }, [userId]) // Dependency array
+  
+  if (loading) return <div>Loading...</div>
+  
+  return <div>Hello, {user.name}!</div>
+}
+```
+
+## Custom Hooks
+
+Create reusable stateful logic.
+
+<RefCard 
+  title="useLocalStorage Hook"
+  description="Custom hook for persisting state in localStorage"
+  href="https://usehooks.com/uselocalstorage/"
+  type="external"
+  tags={["React", "Custom Hooks", "Storage"]}
+/>
+
+```tsx
+function useLocalStorage(key, initialValue) {
+  const [storedValue, setStoredValue] = useState(() => {
+    try {
+      const item = window.localStorage.getItem(key)
+      return item ? JSON.parse(item) : initialValue
+    } catch (error) {
+      return initialValue
+    }
+  })
+  
+  const setValue = (value) => {
+    try {
+      setStoredValue(value)
+      window.localStorage.setItem(key, JSON.stringify(value))
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  
+  return [storedValue, setValue]
+}
+```
+
+<Callout type="tip" title="Best Practice">
+Always include dependencies in useEffect arrays to avoid bugs and infinite loops.
+</Callout>
