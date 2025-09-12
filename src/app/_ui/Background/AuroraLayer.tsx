@@ -1,6 +1,7 @@
 'use client';
 
 import { MOTION_DISABLED } from '../hooks/useReducedMotion';
+import { AURORA } from './config';
 
 export default function AuroraLayer() {
   const motionClasses = MOTION_DISABLED ? '' : 'animate-aurora-a';
@@ -14,8 +15,9 @@ export default function AuroraLayer() {
     } as React.CSSProperties}>
       {/* First aurora layer */}
       <div 
-        className={`absolute inset-0 opacity-25 ${motionClasses}`}
+        className={`absolute inset-0 ${motionClasses}`}
         style={{
+          opacity: AURORA.opacity,
           background: `radial-gradient(ellipse 80% 50% at 20% 40%, var(--aurora-1) 0%, transparent 50%),
                        radial-gradient(ellipse 60% 70% at 70% 80%, var(--aurora-2) 0%, transparent 50%)`
         }}
@@ -23,8 +25,9 @@ export default function AuroraLayer() {
       
       {/* Second aurora layer */}
       <div 
-        className={`absolute inset-0 opacity-20 ${motionClassesB}`}
+        className={`absolute inset-0 ${motionClassesB}`}
         style={{
+          opacity: AURORA.opacity * 0.8,
           background: `radial-gradient(ellipse 70% 60% at 80% 20%, var(--aurora-3) 0%, transparent 50%),
                        radial-gradient(ellipse 90% 40% at 30% 70%, var(--aurora-1) 0%, transparent 50%)`
         }}

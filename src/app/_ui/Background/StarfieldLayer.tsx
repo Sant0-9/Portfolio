@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { MOTION_DISABLED } from '../hooks/useReducedMotion';
+import { reducedForMobile, SHOOTING } from './config';
 
 interface Star {
   x: number;
@@ -37,12 +38,11 @@ export default function StarfieldLayer() {
 
   // Initialize stars
   const initStars = useCallback((width: number, height: number) => {
-    const isMobile = width < 768;
-    const starCounts = isMobile ? [40, 25, 15] : [80, 50, 30];
+    const config = reducedForMobile(width);
     const stars: Star[] = [];
 
     for (let depth = 0; depth < 3; depth++) {
-      for (let i = 0; i < starCounts[depth]; i++) {
+      for (let i = 0; i < config.starCounts[depth]; i++) {
         const star: Star = {
           x: Math.random() * width,
           y: Math.random() * height,
@@ -74,16 +74,15 @@ export default function StarfieldLayer() {
   const createShootingStar = useCallback((width: number, height: number) => {
     const now = Date.now();
     const timeSinceLastStar = now - lastShootingStarRef.current;
-    const minInterval = 20000; // 20s
-    const maxInterval = 35000; // 35s
-    const nextInterval = minInterval + Math.random() * (maxInterval - minInterval);
+    const config = reducedForMobile(width);
+    const nextInterval = config.shooting.minMs + Math.random() * (config.shooting.maxMs - config.shooting.minMs);
 
     if (timeSinceLastStar > nextInterval) {
       const shootingStar: ShootingStar = {
         x: Math.random() * width,
         y: -10,
         vx: (Math.random() - 0.5) * 2,
-        vy: 1.8 + Math.random() * 1.2,
+        vy: config.shooting.speed + Math.random() * 1.2,
         life: 0,
         maxLife: 60 + Math.random() * 40,
         alpha: 0,
@@ -104,6 +103,8 @@ export default function StarfieldLayer() {
     // Clear canvas
     ctx.clearRect(0, 0, width, height);
 
+    const config = reducedForMobile(width);
+
     // Update and draw stars
     starsRef.current.forEach((star) => {
       // Apply parallax based on scroll and mouse
@@ -111,11 +112,11 @@ export default function StarfieldLayer() {
       let parallaxY = 0;
 
       if (star.depth === 1) {
-        parallaxX = (mouseRef.current.x * 0.03 + scrollRef.current * 0.03) * -1;
-        parallaxY = mouseRef.current.y * 0.03;
+        parallaxX = (mouseRef.current.x * config.parallax.depth1 + scrollRef.current * config.parallax.depth1) * -1;
+        parallaxY = mouseRef.current.y * config.parallax.depth1;
       } else if (star.depth === 2) {
-        parallaxX = (mouseRef.current.x * 0.06 + scrollRef.current * 0.06) * -1;
-        parallaxY = mouseRef.current.y * 0.06;
+        parallaxX = (mouseRef.current.x * config.parallax.depth2 + scrollRef.current * config.parallax.depth2) * -1;
+        parallaxY = mouseRef.current.y * config.parallax.depth2;
       }
 
       // Update position with wrapping

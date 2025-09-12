@@ -44,7 +44,7 @@
 
 ---
 
-## STEP 3 — StarfieldLayer (Canvas + Parallax + Shooting Star)
+## STEP 3 — StarfieldLayer (Canvas + Parallax + Shooting Star) ✅
 
 **Prompt:**
 
@@ -59,7 +59,7 @@
 
 ---
 
-## STEP 4 — Reduced Motion & Debug Flag Test
+## STEP 4 — Reduced Motion & Debug Flag Test ✅
 
 **Prompt:**
 
@@ -69,7 +69,7 @@
 
 ---
 
-## STEP 5 — Config Knobs (Centralized)
+## STEP 5 — Config Knobs (Centralized) ✅
 
 **Prompt:**
 
@@ -84,7 +84,7 @@
 
 ---
 
-## STEP 6 — Hero Title (Fade‑In Stagger + Fade‑Out on Scroll)
+## STEP 6 — Hero Title (Fade‑In Stagger + Fade‑Out on Scroll) ✅
 
 **Prompt:**
 
