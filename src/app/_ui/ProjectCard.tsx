@@ -1,5 +1,6 @@
 'use client';
 
+import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { fadeInUp, dur, ease } from './motion';
 import { MOTION_DISABLED } from './hooks/useReducedMotion';
@@ -18,8 +19,9 @@ interface ProjectCardProps {
   index?: number;
 }
 
-export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
-  const cardVariants = {
+function ProjectCard({ project, index = 0 }: ProjectCardProps) {
+  // Memoize expensive variant calculations
+  const cardVariants = useMemo(() => ({
     hidden: fadeInUp.hidden,
     visible: {
       ...fadeInUp.visible,
@@ -28,9 +30,9 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
         delay: MOTION_DISABLED ? 0 : index * 0.1
       }
     }
-  };
+  }), [index]);
 
-  const hoverVariants = {
+  const hoverVariants = useMemo(() => ({
     rest: {
       y: 0,
       boxShadow: MOTION_DISABLED ? 
@@ -47,7 +49,7 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
         ease: ease.out
       }
     }
-  };
+  }), []);
 
   const imageVariants = {
     rest: { 
@@ -197,3 +199,5 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
     </CardComponent>
   );
 }
+
+export default memo(ProjectCard);

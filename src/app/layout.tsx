@@ -5,12 +5,12 @@ import Background from './_ui/Background'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Solar System Portfolio',
-  description: 'Personal portfolio website showcasing projects as planets in a solar system',
+  title: "Santo's Digital Universe",
+  description: 'Full-stack developer crafting exceptional digital experiences with modern web technologies.',
   metadataBase: new URL('https://portfolio.example.com'),
   openGraph: {
-    title: 'Solar System Portfolio',
-    description: 'Personal portfolio website showcasing projects as planets in a solar system',
+    title: "Santo's Digital Universe",
+    description: 'Full-stack developer crafting exceptional digital experiences with modern web technologies.',
     type: 'website',
   },
 }

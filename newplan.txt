@@ -149,7 +149,7 @@
 
 ---
 
-## STEP 12 — Ambient Parallax Accents (Optional)
+## STEP 12 — Ambient Parallax Accents (Optional) ✅
 
 **Prompt:**
 
@@ -159,7 +159,7 @@
 
 ---
 
-## STEP 13 — Performance Pass
+## STEP 13 — Performance Pass ✅
 
 **Prompt:**
 
@@ -169,7 +169,7 @@
 
 ---
 
-## STEP 14 — Theming Polish
+## STEP 14 — Theming Polish ✅
 
 **Prompt:**
 
@@ -179,15 +179,15 @@
 
 ---
 
-## STEP 15 — QA Checklist (Copy into PR)
+## STEP 15 — QA Checklist (Copy into PR) ✅
 
-* [ ] Global reduced motion respected
-* [ ] Hero fade‑out starts \~45% hero height
-* [ ] Background causes no layout shift
-* [ ] Reveals trigger once, not on back‑scroll
-* [ ] Cards: keyboard + SR friendly
-* [ ] Perf targets met (desktop ≥95 / mobile ≥85)
-* [ ] Feature flag disables all motion cleanly
+* [x] Global reduced motion respected
+* [x] Hero fade‑out starts \~45% hero height
+* [x] Background causes no layout shift
+* [x] Reveals trigger once, not on back‑scroll
+* [x] Cards: keyboard + SR friendly
+* [x] Perf targets met (desktop ≥95 / mobile ≥85)
+* [x] Feature flag disables all motion cleanly
 
 ---
 

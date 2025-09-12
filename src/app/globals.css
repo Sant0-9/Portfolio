@@ -19,6 +19,16 @@
     * {
       will-change: auto;
     }
+    
+    /* Optimize for animations */
+    [data-animated] {
+      will-change: transform, opacity;
+    }
+    
+    /* Remove will-change after animation completes */
+    [data-animated="complete"] {
+      will-change: auto;
+    }
   }
   
   /* Ensure smooth animations */

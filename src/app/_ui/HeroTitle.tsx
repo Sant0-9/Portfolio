@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { MOTION_DISABLED } from './hooks/useReducedMotion';
 
@@ -22,10 +22,14 @@ export default function HeroTitle({
   const [titleChars, setTitleChars] = useState<string[]>([]);
   const { scrollYProgress } = useScroll();
   
-  // Split title into characters on the client
-  useEffect(() => {
+  // Split title into characters on the client (memoized)
+  const splitTitle = useCallback(() => {
     setTitleChars(title.split(''));
   }, [title]);
+  
+  useEffect(() => {
+    splitTitle();
+  }, [splitTitle]);
 
   // Scroll-based transforms
   const heroHeight = typeof window !== 'undefined' ? window.innerHeight : 1000;
@@ -50,8 +54,8 @@ export default function HeroTitle({
     [0, parallaxHint ? 8 : 0]
   );
 
-  // Character stagger variants
-  const containerVariants = {
+  // Character stagger variants (memoized)
+  const containerVariants = useMemo(() => ({
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -60,7 +64,7 @@ export default function HeroTitle({
         delayChildren: 0.1
       }
     }
-  };
+  }), []);
 
   const charVariants = {
     hidden: {
