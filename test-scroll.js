@@ -12,14 +12,16 @@ async function testScrolling() {
     
     // Capture console messages
     page.on('console', msg => {
-      const text = msg.text();
-      if (text.includes('Scroll progress changed')) {
-        console.log('BROWSER:', text);
-      }
+      console.log('BROWSER CONSOLE:', msg.type(), msg.text());
+    });
+    
+    // Capture errors
+    page.on('pageerror', error => {
+      console.log('BROWSER ERROR:', error.message);
     });
     
     console.log('Loading page...');
-    await page.goto('http://localhost:3001', { waitUntil: 'networkidle0' });
+    await page.goto('http://localhost:3000', { waitUntil: 'networkidle0' });
     
     // Wait for the page to load
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -38,6 +40,10 @@ async function testScrolling() {
     // Check for scroll indicator
     console.log('Looking for scroll indicator...');
     const fixedScrollDiv = await page.$('.fixed.top-4.right-4');
+    console.log('Looking for ScrollTracker indicator...');
+    const scrollTrackerDiv = await page.$('.fixed.bottom-4.left-4');
+    console.log('ScrollTracker found:', scrollTrackerDiv !== null);
+    
     if (fixedScrollDiv) {
       const scrollText = await page.evaluate(el => el.textContent, fixedScrollDiv);
       console.log('Fixed scroll indicator found:', scrollText);
@@ -51,6 +57,21 @@ async function testScrolling() {
       
       await page.evaluate(() => window.scrollBy(0, 500));
       await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Trigger a manual scroll event check
+      await page.evaluate(() => {
+        console.log('Manual scroll check:', {
+          scrollY: window.scrollY,
+          documentHeight: document.documentElement.scrollHeight,
+          windowHeight: window.innerHeight
+        });
+        // Test if our debug function exists
+        if (typeof window.testScrollDebug === 'function') {
+          window.testScrollDebug();
+        }
+        // Force trigger scroll event
+        window.dispatchEvent(new Event('scroll'));
+      });
       
       const scrollYAfter = await page.evaluate(() => window.scrollY);
       console.log('Scroll position after 500px scroll:', scrollYAfter);

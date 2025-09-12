@@ -1,21 +1,15 @@
-import dynamic from 'next/dynamic'
 import Navbar from '@/components/navbar/Navbar'
 import Section from '@/components/common/Section'
 import ProjectsSection from '@/components/projects/ProjectsSection'
-
-// Dynamic import to prevent SSR issues with Three.js
-const SolarHero = dynamic(() => import('@/components/hero/SolarHero'), {
-  ssr: false,
-  loading: () => <div className="h-screen bg-black flex items-center justify-center text-zinc-200">Loading Solar System...</div>
-})
+import SimpleHero from '@/components/hero/SimpleHero'
 
 export default function Home() {
   return (
     <div>
       <Navbar />
       
-      {/* Hero Section with Solar System */}
-      <SolarHero />
+      {/* Hero Section with Simple Background */}
+      <SimpleHero />
       {/* Projects Section (cards for SEO/scan) */}
       <ProjectsSection />
       
