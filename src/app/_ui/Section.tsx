@@ -3,6 +3,7 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { reveal, viewport } from './motion';
+import { MOTION_DISABLED } from './hooks/useReducedMotion';
 
 interface SectionProps {
   id?: string;
@@ -54,12 +55,39 @@ export default function Section({
             variants={reveal}
           >
             {heading && (
-              <motion.h2 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-white via-zinc-100 to-zinc-300 bg-clip-text text-transparent mb-4">
+              <motion.h2 
+                className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4"
+                initial={MOTION_DISABLED ? {} : {
+                  textShadow: '0 0 15px rgba(0,240,255,0.4), 0 0 30px rgba(0,240,255,0.2), 0 2px 4px rgba(0,0,0,0.3)'
+                }}
+                whileInView={MOTION_DISABLED ? {} : {
+                  textShadow: [
+                    '0 0 15px rgba(0,240,255,0.4), 0 0 30px rgba(0,240,255,0.2), 0 2px 4px rgba(0,0,0,0.3)',
+                    '0 0 25px rgba(0,240,255,0.6), 0 0 40px rgba(0,240,255,0.4), 0 2px 4px rgba(0,0,0,0.3)',
+                    '0 0 15px rgba(0,240,255,0.4), 0 0 30px rgba(0,240,255,0.2), 0 2px 4px rgba(0,0,0,0.3)'
+                  ],
+                  transition: {
+                    duration: 2,
+                    ease: 'easeInOut',
+                    delay: 0.5
+                  }
+                }}
+                viewport={{ once: true }}
+                style={{
+                  fontFamily: 'Orbitron, monospace'
+                }}
+              >
                 {heading}
               </motion.h2>
             )}
             {subheading && (
-              <motion.p className="text-lg text-zinc-400 max-w-2xl mx-auto">
+              <motion.p 
+                className="text-lg text-zinc-300 max-w-2xl mx-auto"
+                style={{
+                  fontFamily: 'Exo 2, sans-serif',
+                  textShadow: '0 0 8px rgba(116,185,255,0.3)'
+                }}
+              >
                 {subheading}
               </motion.p>
             )}
