@@ -99,7 +99,7 @@
 
 ---
 
-## STEP 7 — Global Motion Tokens
+## STEP 7 — Global Motion Tokens ✅
 
 **Prompt:**
 
@@ -109,7 +109,7 @@
 
 ---
 
-## STEP 8 — Section Scaffold
+## STEP 8 — Section Scaffold ✅
 
 **Prompt:**
 
@@ -119,17 +119,17 @@
 
 ---
 
-## STEP 9 — Scroll‑Triggered Reveals (Once)
+## STEP 9 — Scroll‑Triggered Reveals (Once) ✅
 
 **Prompt:**
 
-> Apply `whileInView` reveals using Intersection Observer via Framer’s `viewport={{ once:true, margin:'0px 0px -10% 0px' }}`. No scroll‑linked animations per tick; only on entry. Respect reduced motion by rendering visible immediately.
+> Apply `whileInView` reveals using Intersection Observer via Framer's `viewport={{ once:true, margin:'0px 0px -10% 0px' }}`. No scroll‑linked animations per tick; only on entry. Respect reduced motion by rendering visible immediately.
 
 **Acceptance:** Each block reveals once; scroll remains smooth.
 
 ---
 
-## STEP 10 — ProjectCard Micro‑Interactions
+## STEP 10 — ProjectCard Micro‑Interactions ✅
 
 **Prompt:**
 
@@ -139,7 +139,7 @@
 
 ---
 
-## STEP 11 — Sticky Nav + ScrollSpy + Progress Bar
+## STEP 11 — Sticky Nav + ScrollSpy + Progress Bar ✅
 
 **Prompt:**
 
