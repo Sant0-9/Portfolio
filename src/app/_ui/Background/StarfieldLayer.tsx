@@ -292,6 +292,11 @@ export default function StarfieldLayer() {
 
   return (
     <div className="absolute inset-0">
+      {/* Debug: Add visible elements */}
+      <div className="absolute top-4 left-4 w-4 h-4 bg-white rounded-full opacity-50"></div>
+      <div className="absolute top-10 left-20 w-2 h-2 bg-cyan-400 rounded-full opacity-70"></div>
+      <div className="absolute top-16 left-40 w-3 h-3 bg-purple-400 rounded-full opacity-60"></div>
+      
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full"
