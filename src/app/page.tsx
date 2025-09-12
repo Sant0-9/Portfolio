@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic'
 import Navbar from '@/components/navbar/Navbar'
 import Section from '@/components/common/Section'
+import ProjectsSection from '@/components/projects/ProjectsSection'
 
 // Dynamic import to prevent SSR issues with Three.js
 const SolarHero = dynamic(() => import('@/components/hero/SolarHero'), {
@@ -10,12 +11,29 @@ const SolarHero = dynamic(() => import('@/components/hero/SolarHero'), {
 
 export default function Home() {
   return (
-    <div className="h-full">
+    <div>
       <Navbar />
       
       {/* Hero Section with Solar System */}
       <SolarHero />
+      {/* Projects Section (cards for SEO/scan) */}
+      <ProjectsSection />
       
+      {/* About Section */}
+      <Section className="py-24 bg-gradient-to-b from-zinc-900 to-zinc-800">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-4xl md:text-6xl font-extrabold text-white mb-8">About</h2>
+          <p className="text-xl text-zinc-300 mb-8">Learn more about my background and experience</p>
+        </div>
+      </Section>
+      
+      {/* Skills Section */}
+      <Section className="py-24 bg-gradient-to-b from-zinc-800 to-zinc-900">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-4xl md:text-6xl font-extrabold text-white mb-8">Skills</h2>
+          <p className="text-xl text-zinc-300 mb-8">Technologies and tools I work with</p>
+        </div>
+      </Section>
       
       {/* Contact Section */}
       <Section id="contact" fullHeight className="flex items-center justify-center bg-gradient-to-b from-zinc-900 to-black">

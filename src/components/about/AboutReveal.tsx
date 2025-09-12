@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
-import { fadeInUp, staggerContainer, staggerItem } from '@/lib/motion'
+import { fadeUp, stagger } from '@/lib/motion'
 import { useEffect, useRef } from 'react'
 
 interface AboutRevealProps {
@@ -105,25 +105,25 @@ export default function AboutReveal({ isOpen, onClose }: AboutRevealProps) {
 
               <div className="p-8 sm:p-12">
                 <motion.div
-                  variants={staggerContainer}
+                  variants={stagger(0.1)}
                   initial="hidden"
                   animate="visible"
                 >
                   <motion.h2 
                     id="about-title"
                     className="text-3xl md:text-5xl font-extrabold text-white mb-8 text-center"
-                    variants={fadeInUp}
+                    variants={fadeUp}
                   >
                     About Me
                   </motion.h2>
                   
                   <motion.div 
                     className="space-y-6 mb-12 text-center max-w-3xl mx-auto"
-                    variants={staggerContainer}
+                    variants={stagger(0.1)}
                   >
                     <motion.p 
                       className="text-base sm:text-lg text-zinc-300 leading-relaxed"
-                      variants={staggerItem}
+                      variants={fadeUp}
                     >
                       I&apos;m a Computer Science student at UT Dallas with a passion for building intelligent systems 
                       that solve real-world problems. My journey in software engineering spans from full-stack web 
@@ -133,7 +133,7 @@ export default function AboutReveal({ isOpen, onClose }: AboutRevealProps) {
                     
                     <motion.p 
                       className="text-base sm:text-lg text-zinc-300 leading-relaxed"
-                      variants={staggerItem}
+                      variants={fadeUp}
                     >
                       When I&apos;m not coding, you&apos;ll find me exploring the latest developments in machine learning, 
                       contributing to open-source projects, or mentoring fellow developers. I believe in the power of 
@@ -142,7 +142,7 @@ export default function AboutReveal({ isOpen, onClose }: AboutRevealProps) {
                     
                     <motion.p 
                       className="text-base sm:text-lg text-zinc-300 leading-relaxed"
-                      variants={staggerItem}
+                      variants={fadeUp}
                     >
                       Currently seeking opportunities for Spring 2026 internships where I can apply my technical 
                       skills and passion for innovation to create impactful software solutions.
@@ -151,11 +151,11 @@ export default function AboutReveal({ isOpen, onClose }: AboutRevealProps) {
                   
                   <motion.div 
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                    variants={staggerContainer}
+                    variants={stagger(0.08)}
                   >
                     <motion.div 
                       className="bg-zinc-800/80 border border-zinc-700/50 rounded-lg p-6 backdrop-blur-sm"
-                      variants={staggerItem}
+                      variants={fadeUp}
                       whileHover={{ scale: 1.02, y: -2 }}
                       transition={{ duration: 0.2 }}
                     >
@@ -167,7 +167,7 @@ export default function AboutReveal({ isOpen, onClose }: AboutRevealProps) {
                     
                     <motion.div 
                       className="bg-zinc-800/80 border border-zinc-700/50 rounded-lg p-6 backdrop-blur-sm"
-                      variants={staggerItem}
+                      variants={fadeUp}
                       whileHover={{ scale: 1.02, y: -2 }}
                       transition={{ duration: 0.2 }}
                     >
@@ -179,7 +179,7 @@ export default function AboutReveal({ isOpen, onClose }: AboutRevealProps) {
                     
                     <motion.div 
                       className="bg-zinc-800/80 border border-zinc-700/50 rounded-lg p-6 md:col-span-2 lg:col-span-1 backdrop-blur-sm"
-                      variants={staggerItem}
+                      variants={fadeUp}
                       whileHover={{ scale: 1.02, y: -2 }}
                       transition={{ duration: 0.2 }}
                     >

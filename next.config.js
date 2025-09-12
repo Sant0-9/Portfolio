@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    optimizePackageImports: ['@react-three/fiber', '@react-three/drei', 'three', 'framer-motion']
+    // Avoid optimizing framer-motion to prevent RSC client manifest issues
+    optimizePackageImports: ['@react-three/fiber', '@react-three/drei', 'three']
   },
   compress: true,
   poweredByHeader: false,

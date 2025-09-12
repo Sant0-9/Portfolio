@@ -20,13 +20,13 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="h-full">
-      <body className={`${GeistSans.variable} ${GeistMono.variable} font-sans h-full`}>
+    <html lang="en" className="overflow-x-hidden bg-black text-zinc-200 antialiased">
+      <body className={`${GeistSans.variable} ${GeistMono.variable} font-sans overflow-x-hidden bg-black text-zinc-200 antialiased`}>
         <a href="#main" className="skip-link">
           Skip to main content
         </a>
         
-        <main id="main" className="h-full">
+        <main id="main">
           {children}
         </main>
       </body>

@@ -6,13 +6,17 @@ interface SectionProps {
   children: ReactNode
   className?: string
   fullHeight?: boolean
+  'aria-label'?: string
+  role?: string
 }
 
 const Section = forwardRef<HTMLElement, SectionProps>(({
   id, 
   children, 
   className, 
-  fullHeight = false 
+  fullHeight = false,
+  'aria-label': ariaLabel,
+  role 
 }, ref) => {
   return (
     <section 
@@ -23,6 +27,8 @@ const Section = forwardRef<HTMLElement, SectionProps>(({
         fullHeight && "min-h-screen",
         className
       )}
+      aria-label={ariaLabel}
+      role={role}
     >
       {children}
     </section>

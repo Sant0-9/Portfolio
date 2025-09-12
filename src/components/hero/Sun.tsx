@@ -18,30 +18,50 @@ export default function Sun({ scrollProgress }: SunProps) {
 
   useFrame((state) => {
     const time = state.clock.elapsedTime
-    const progress = scrollProgress.get()
+    const progress = scrollProgress?.get() || 0
     
     if (sunRef.current) {
       sunRef.current.rotation.y += 0.003
-      // Scale up slightly as scroll reaches end (after 75%)
-      const scaleBoost = progress > 0.75 ? (progress - 0.75) * 0.4 : 0
-      const scale = 1 + Math.sin(time * 0.5) * 0.02 + scaleBoost
-      sunRef.current.scale.setScalar(scale)
+      
+      // Progressive scaling based on scroll phases
+      let scaleMultiplier = 1
+      if (progress > 0.3) {
+        // Start growing slightly when approaching solar system
+        scaleMultiplier = 1 + (progress - 0.3) * 0.2
+      }
+      if (progress > 0.75) {
+        // Extra growth in interaction zone
+        scaleMultiplier += (progress - 0.75) * 0.3
+      }
+      
+      const pulseEffect = hovered ? 1.05 : 1
+      const breathingEffect = 1 + Math.sin(time * 0.5) * 0.015
+      const finalScale = scaleMultiplier * pulseEffect * breathingEffect
+      
+      sunRef.current.scale.setScalar(finalScale)
     }
     
     if (glowRef.current) {
       glowRef.current.rotation.y -= 0.002
       glowRef.current.rotation.z += 0.001
-      // Brighten glow based on scroll progress
+      
+      // Dynamic glow based on scroll and hover
       const material = glowRef.current.material as THREE.MeshBasicMaterial
-      material.opacity = 0.4 + (progress * 0.2)
+      const baseOpacity = 0.4 + (progress * 0.3)
+      const hoverBoost = hovered ? 0.2 : 0
+      material.opacity = Math.min(1, baseOpacity + hoverBoost)
     }
     
     if (rimGlowRef.current) {
       rimGlowRef.current.rotation.x += 0.001
       rimGlowRef.current.rotation.z -= 0.0015
-      // Brighten rim glow
+      
+      // Enhanced rim glow for interaction phase
       const material = rimGlowRef.current.material as THREE.MeshBasicMaterial
-      material.opacity = 0.15 + (progress * 0.15)
+      const baseOpacity = 0.15 + (progress * 0.2)
+      const interactionBoost = progress > 0.7 ? (progress - 0.7) * 0.3 : 0
+      const hoverBoost = hovered ? 0.15 : 0
+      material.opacity = Math.min(0.8, baseOpacity + interactionBoost + hoverBoost)
     }
   })
 
@@ -52,10 +72,16 @@ export default function Sun({ scrollProgress }: SunProps) {
         ref={sunRef} 
         args={[50, 32, 32]} 
         position={[0, 0, 0]}
-        onPointerEnter={() => setHovered(true)}
-        onPointerLeave={() => setHovered(false)}
-        onClick={() => {
-          // This will be handled by the parent component
+        onPointerEnter={(e) => {
+          setHovered(true)
+          document.body.style.cursor = 'pointer'
+        }}
+        onPointerLeave={(e) => {
+          setHovered(false)
+          document.body.style.cursor = 'default'
+        }}
+        onClick={(e) => {
+          e.stopPropagation()
           window.dispatchEvent(new CustomEvent('sunClicked'))
         }}
       >
