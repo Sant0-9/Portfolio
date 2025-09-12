@@ -11,15 +11,15 @@ export default function AuroraLayer() {
     <div className="absolute inset-0" style={{ 
       '--aurora-1': '#00F0FF',
       '--aurora-2': '#A855F7', 
-      '--aurora-3': '#1E40AF'
+      '--aurora-3': '#3B82F6'
     } as React.CSSProperties}>
       {/* First aurora layer */}
       <div 
         className={`absolute inset-0 ${motionClasses}`}
         style={{
-          opacity: AURORA.opacity,
-          background: `radial-gradient(ellipse 80% 50% at 20% 40%, var(--aurora-1) 0%, transparent 50%),
-                       radial-gradient(ellipse 60% 70% at 70% 80%, var(--aurora-2) 0%, transparent 50%)`
+          opacity: AURORA.opacity + 0.3,
+          background: `radial-gradient(ellipse 80% 50% at 20% 40%, var(--aurora-1) 0%, transparent 70%),
+                       radial-gradient(ellipse 60% 70% at 70% 80%, var(--aurora-2) 0%, transparent 70%)`
         }}
       />
       
@@ -27,9 +27,9 @@ export default function AuroraLayer() {
       <div 
         className={`absolute inset-0 ${motionClassesB}`}
         style={{
-          opacity: AURORA.opacity * 0.8,
-          background: `radial-gradient(ellipse 70% 60% at 80% 20%, var(--aurora-3) 0%, transparent 50%),
-                       radial-gradient(ellipse 90% 40% at 30% 70%, var(--aurora-1) 0%, transparent 50%)`
+          opacity: (AURORA.opacity + 0.2) * 0.8,
+          background: `radial-gradient(ellipse 70% 60% at 80% 20%, var(--aurora-3) 0%, transparent 70%),
+                       radial-gradient(ellipse 90% 40% at 30% 70%, var(--aurora-1) 0%, transparent 70%)`
         }}
       />
       

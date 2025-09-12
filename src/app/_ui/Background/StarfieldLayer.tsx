@@ -48,8 +48,8 @@ export default function StarfieldLayer() {
           y: Math.random() * height,
           baseX: Math.random() * width,
           baseY: Math.random() * height,
-          radius: 0.5 + Math.random() * 0.7,
-          alpha: 0.2 + Math.random() * 0.6,
+          radius: 0.5 + Math.random() * 1.2,
+          alpha: 0.4 + Math.random() * 0.8,
           depth,
           twinkle: Math.random() * Math.PI * 2,
         };
@@ -141,12 +141,14 @@ export default function StarfieldLayer() {
 
       // Twinkle effect
       star.twinkle += 0.02;
-      const twinkleAlpha = star.alpha * (0.8 + 0.2 * Math.sin(star.twinkle));
+      const twinkleAlpha = Math.min(1, star.alpha * (0.9 + 0.3 * Math.sin(star.twinkle)));
 
       // Draw star
       ctx.save();
       ctx.globalAlpha = twinkleAlpha;
       ctx.fillStyle = (star as any).golden ? '#FFD580' : '#ffffff';
+      ctx.shadowColor = (star as any).golden ? '#FFD580' : '#ffffff';
+      ctx.shadowBlur = star.radius * 2;
       ctx.beginPath();
       ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
       ctx.fill();
