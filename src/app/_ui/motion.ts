@@ -1,5 +1,8 @@
 import { MOTION_DISABLED } from './hooks/useReducedMotion';
 
+// Re-export MOTION_DISABLED for convenience
+export { MOTION_DISABLED };
+
 // Animation duration tokens
 export const dur = {
   fast: 0.25,
