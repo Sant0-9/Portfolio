@@ -1,32 +1,122 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="180" height="180" rx="22" fill="url(#gradient)"/>
+  <!-- Background -->
+  <rect width="180" height="180" rx="22" fill="url(#bgGradient)"/>
 
-  <!-- Knight Chess Piece -->
-  <g transform="translate(45, 22)">
-    <!-- Knight Head -->
-    <path d="M28 42C28 42 21 35 14 42C7 49 8.75 56 15.75 59.5L17.5 63L24.5 61.25L29.75 66.5L35 63L38.5 56L36.75 49L31.5 45.5L28 42Z" fill="white" opacity="0.9"/>
+  <!-- Outer glow ring -->
+  <circle cx="90" cy="90" r="70" stroke="url(#glowGradient)" stroke-width="1" fill="none" opacity="0.3"/>
 
-    <!-- Knight Mane -->
-    <path d="M15.75 42C15.75 42 12.25 38.5 8.75 40.25C5.25 42 7 45.5 10.5 47.25L15.75 42Z" fill="white" opacity="0.7"/>
+  <!-- Main geometric design -->
+  <g transform="translate(90, 90)">
+    <!-- Central hexagon -->
+    <polygon points="-14,-24.25 14,-24.25 28,0 14,24.25 -14,24.25 -28,0"
+             fill="url(#centerGradient)"
+             stroke="url(#strokeGradient)"
+             stroke-width="1.5"/>
 
-    <!-- Knight Body/Base -->
-    <path d="M10.5 63L45.5 63L49 70L47.25 84L43.75 98L40.25 112L36.75 119L8.75 119L5.25 112L1.75 98L-1.75 84L0 70L3.5 63L10.5 63Z" fill="white" opacity="0.9"/>
+    <!-- Inner core -->
+    <circle cx="0" cy="0" r="9" fill="url(#coreGradient)"/>
 
-    <!-- Knight Eye -->
-    <circle cx="22.75" cy="52.5" r="1.4" fill="#1a1a1a"/>
+    <!-- Floating elements - representing code/data -->
+    <g opacity="0.8">
+      <!-- Top elements -->
+      <rect x="-3" y="-42" width="6" height="6" rx="1" fill="#14b8a6" opacity="0.6"/>
+      <rect x="21" y="-32" width="4" height="4" rx="1" fill="#8b5cf6" opacity="0.7"/>
+      <rect x="-25" y="-32" width="4" height="4" rx="1" fill="#06b6d4" opacity="0.5"/>
+
+      <!-- Side elements -->
+      <rect x="39" y="-3" width="6" height="6" rx="1" fill="#14b8a6" opacity="0.6"/>
+      <rect x="-45" y="-3" width="6" height="6" rx="1" fill="#8b5cf6" opacity="0.7"/>
+
+      <!-- Bottom elements -->
+      <rect x="-3" y="36" width="6" height="6" rx="1" fill="#06b6d4" opacity="0.6"/>
+      <rect x="21" y="26" width="4" height="4" rx="1" fill="#14b8a6" opacity="0.5"/>
+      <rect x="-25" y="26" width="4" height="4" rx="1" fill="#8b5cf6" opacity="0.6"/>
+    </g>
+
+    <!-- Connection lines -->
+    <g stroke="url(#lineGradient)" stroke-width="0.8" opacity="0.4">
+      <line x1="0" y1="-9" x2="0" y2="-36"/>
+      <line x1="8" y1="-4" x2="21" y2="-28"/>
+      <line x1="-8" y1="-4" x2="-21" y2="-28"/>
+      <line x1="9" y1="0" x2="33" y2="0"/>
+      <line x1="-9" y1="0" x2="-39" y2="0"/>
+      <line x1="0" y1="9" x2="0" y2="30"/>
+      <line x1="8" y1="4" x2="21" y2="22"/>
+      <line x1="-8" y1="4" x2="-21" y2="22"/>
+    </g>
   </g>
 
-  <!-- Text -->
-  <text x="90" y="147" font-family="Orbitron, monospace" font-size="16" font-weight="600" text-anchor="middle" fill="white" opacity="0.9">
+  <!-- Brand text -->
+  <text x="90" y="150"
+        font-family="'Orbitron', monospace"
+        font-size="13"
+        font-weight="700"
+        text-anchor="middle"
+        fill="url(#textGradient)">
     OneKnight
   </text>
 
-  <!-- Gradient Definition -->
+  <!-- Subtle accent line under text -->
+  <line x1="63" y1="158" x2="117" y2="158"
+        stroke="url(#accentGradient)"
+        stroke-width="1"
+        opacity="0.6"/>
+
+  <!-- Gradient Definitions -->
   <defs>
-    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#2d2d2d;stop-opacity:1" />
+    <!-- Background gradient -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f0f0f;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1a1a1a;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#0a0a0a;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Glow gradient -->
+    <linearGradient id="glowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#14b8a6;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:0.8" />
+    </linearGradient>
+
+    <!-- Center gradient -->
+    <linearGradient id="centerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#14b8a6;stop-opacity:0.15" />
+      <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:0.15" />
+    </linearGradient>
+
+    <!-- Core gradient -->
+    <radialGradient id="coreGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9" />
+      <stop offset="70%" style="stop-color:#14b8a6;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.6" />
+    </radialGradient>
+
+    <!-- Stroke gradient -->
+    <linearGradient id="strokeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#14b8a6;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.8" />
+    </linearGradient>
+
+    <!-- Line gradient -->
+    <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#14b8a6;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.6" />
+    </linearGradient>
+
+    <!-- Text gradient -->
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#14b8a6;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Accent gradient -->
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#14b8a6;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:0.8" />
     </linearGradient>
   </defs>
 </svg>

@@ -4,7 +4,7 @@ import { useState, useRef, Suspense, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Points, PointMaterial } from "@react-three/drei";
 import { useScroll, useTransform, MotionValue } from "framer-motion";
-import * as random from "maath/random/dist/maath-random.esm";
+import { inSphere } from "maath/random";
 
 interface StarsProps {
   rotationX?: MotionValue<number>;
@@ -13,7 +13,11 @@ interface StarsProps {
 
 const Stars = ({ rotationX, rotationY, ...props }: StarsProps) => {
   const ref = useRef<any>();
-  const [sphere] = useState(() => random.inSphere(new Float32Array(5000), { radius: 1.2 }));
+  const [sphere] = useState(() => {
+    const positions = new Float32Array(5000);
+    inSphere(positions, { radius: 1.2 });
+    return positions;
+  });
   const [currentRotation, setCurrentRotation] = useState({ x: 0, y: 0 });
 
   useEffect(() => {

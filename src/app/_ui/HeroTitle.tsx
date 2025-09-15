@@ -53,7 +53,7 @@ export default function HeroTitle({
     }, 800); // Wait 800ms after load
 
     return () => clearTimeout(timer);
-  }, []); // Empty dependency array - only run once
+  }, [hasLoadGlitched]); // Include hasLoadGlitched in dependencies
 
   // Initialize typewriter after load delay
   useEffect(() => {
