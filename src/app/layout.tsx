@@ -5,13 +5,18 @@ import Background from './_ui/Background'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: "Santo's Digital Universe",
-  description: 'Full-stack developer crafting exceptional digital experiences with modern web technologies.',
+  title: "OneKnight - Shifat Islam Santo",
+  description: 'CS student at UT Dallas and full-stack developer with expertise in modern web applications and AI technologies.',
   metadataBase: new URL('https://portfolio.example.com'),
+  icons: {
+    icon: '/icon.svg',
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
-    title: "Santo's Digital Universe",
-    description: 'Full-stack developer crafting exceptional digital experiences with modern web technologies.',
+    title: "OneKnight - Shifat Islam Santo",
+    description: 'CS student at UT Dallas and full-stack developer with expertise in modern web applications and AI technologies.',
     type: 'website',
+    images: ['/icon.svg'],
   },
 }
 

@@ -1,264 +1,371 @@
 'use client';
 
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
-import TimelineMini from './TimelineMini';
-import Stats from './Stats';
-import { reveal } from '../motion';
-import { MOTION_DISABLED } from '../motion';
-import AnimatedDivider from '../AnimatedDivider';
+import { motion } from 'framer-motion';
 
-
-const timelineData = [
+const techStack = [
   {
-    phase: 'Current',
-    title: 'Delivering Production-Ready Solutions',
-    description: 'Finalizing Tripwise AI travel platform and LifeOS multi-agent system with enterprise-level performance and security optimizations.'
+    name: 'HTML5',
+    color: '#E34F26',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+        <path d="M1.5 0h21l-1.91 21.563L11.977 24l-8.564-2.438L1.5 0zm7.031 9.75l-.232-2.718 10.059.003.23-2.622L5.412 4.41l.698 8.01h9.126l-.326 3.426-2.91.804-2.955-.81-.188-2.11H6.248l.33 4.171L12 19.351l5.379-1.443.744-8.157H8.531z"/>
+      </svg>
+    )
   },
   {
-    phase: 'Q1 2025',
-    title: 'Advanced AI Integration',
-    description: 'Launching enhanced RAG systems with 90% accuracy improvements and automated infrastructure scaling for high-traffic applications.'
+    name: 'CSS3',
+    color: '#1572B6',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+        <path d="M1.5 0h21l-1.91 21.563L11.977 24l-8.565-2.438L1.5 0zm17.09 4.413L5.41 4.41l.213 2.622 10.125.002-.255 2.716h-6.64l.24 2.573h6.182l-.366 3.523-2.91.804-2.956-.81-.188-2.11h-2.61l.29 3.855L12 19.288l5.373-1.53L18.59 4.414z"/>
+      </svg>
+    )
   },
   {
-    phase: 'Q2 2025',
-    title: 'Enterprise AI Platform',
-    description: 'Building comprehensive multi-agent LifeOS platform targeting 10k+ users with real-time collaboration and intelligent automation.'
+    name: 'JavaScript',
+    color: '#F7DF1E',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+        <path d="M0 0h24v24H0V0zm22.034 18.276c-.175-1.095-.888-2.015-3.003-2.873-.736-.345-1.554-.585-1.797-1.14-.091-.33-.105-.51-.046-.705.15-.646.915-.84 1.515-.66.39.12.75.42.976.9 1.034-.676 1.034-.676 1.755-1.125-.27-.42-.404-.601-.586-.78-.63-.705-1.469-1.065-2.834-1.034l-.705.089c-.676.165-1.32.525-1.71 1.005-1.14 1.291-.811 3.541.569 4.471 1.365 1.02 3.361 1.244 3.616 2.205.24 1.17-.87 1.545-1.966 1.41-.811-.18-1.26-.586-1.755-1.336l-1.83 1.051c.21.48.45.689.81 1.109 1.74 1.756 6.09 1.666 6.871-1.004.029-.09.24-.705.074-1.65l.046.067zm-8.983-7.245h-2.248c0 1.938-.009 3.864-.009 5.805 0 1.232.063 2.363-.138 2.711-.33.689-1.18.601-1.566.48-.396-.196-.597-.466-.83-.855-.063-.105-.11-.196-.127-.196l-1.825 1.125c.305.63.75 1.172 1.324 1.517.855.51 2.004.675 3.207.405.783-.226 1.458-.691 1.811-1.411.51-.93.402-2.07.397-3.346.012-2.054 0-4.109 0-6.179l.004-.056z"/>
+      </svg>
+    )
+  },
+  {
+    name: 'TypeScript',
+    color: '#3178C6',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="currentColor" className="w-6 h-6">
+        <path fillRule="nonzero" clipRule="nonzero" d="M0 1.75C0 0.783501 0.783502 0 1.75 0H14.25C15.2165 0 16 0.783502 16 1.75V3.75C16 4.16421 15.6642 4.5 15.25 4.5C14.8358 4.5 14.5 4.16421 14.5 3.75V1.75C14.5 1.61193 14.3881 1.5 14.25 1.5H1.75C1.61193 1.5 1.5 1.61193 1.5 1.75V14.25C1.5 14.3881 1.61193 14.5 1.75 14.5H15.25C15.6642 14.5 16 14.8358 16 15.25C16 15.6642 15.6642 16 15.25 16H1.75C0.783501 16 0 15.2165 0 14.25V1.75ZM4.75 6.5C4.75 6.08579 5.08579 5.75 5.5 5.75H9.25C9.66421 5.75 10 6.08579 10 6.5C10 6.91421 9.66421 7.25 9.25 7.25H8.25V12.5C8.25 12.9142 7.91421 13.25 7.5 13.25C7.08579 13.25 6.75 12.9142 6.75 12.5V7.25H5.5C5.08579 7.25 4.75 6.91421 4.75 6.5ZM11.2757 6.58011C11.6944 6.08164 12.3507 5.75 13.25 5.75C14.0849 5.75 14.7148 6.03567 15.1394 6.48481C15.4239 6.78583 15.4105 7.26052 15.1095 7.54505C14.8085 7.82958 14.3338 7.81621 14.0493 7.51519C13.9394 7.39898 13.7204 7.25 13.25 7.25C12.7493 7.25 12.5306 7.41836 12.4243 7.54489C12.2934 7.70065 12.25 7.896 12.25 8C12.25 8.104 12.2934 8.29935 12.4243 8.45511C12.5306 8.58164 12.7493 8.75 13.25 8.75C13.3257 8.75 13.3988 8.76121 13.4676 8.78207C14.1307 8.87646 14.6319 9.17251 14.9743 9.58011C15.3684 10.0493 15.5 10.604 15.5 11C15.5 11.396 15.3684 11.9507 14.9743 12.4199C14.5556 12.9184 13.8993 13.25 13 13.25C12.1651 13.25 11.5352 12.9643 11.1106 12.5152C10.8261 12.2142 10.8395 11.7395 11.1405 11.4549C11.4415 11.1704 11.9162 11.1838 12.2007 11.4848C12.3106 11.601 12.5296 11.75 13 11.75C13.5007 11.75 13.7194 11.5816 13.8257 11.4551C13.9566 11.2993 14 11.104 14 11C14 10.896 13.9566 10.7007 13.8257 10.5449C13.7194 10.4184 13.5007 10.25 13 10.25C12.9243 10.25 12.8512 10.2388 12.7824 10.2179C12.1193 10.1235 11.6181 9.82749 11.2757 9.41989C10.8816 8.95065 10.75 8.396 10.75 8C10.75 7.604 10.8816 7.04935 11.2757 6.58011Z"/>
+      </svg>
+    )
+  },
+  {
+    name: 'React',
+    color: '#61DAFB',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+        <path d="M14.23 12.004a2.236 2.236 0 01-2.235 2.236 2.236 2.236 0 01-2.236-2.236 2.236 2.236 0 012.235-2.236 2.236 2.236 0 012.236 2.236zm2.648-10.69c-1.346 0-3.107.96-4.888 2.622-1.78-1.653-3.542-2.602-4.887-2.602-.41 0-.783.093-1.106.278-1.375.793-1.683 3.264-.973 6.365C1.98 8.917 0 10.42 0 12.004c0 1.59 1.99 3.097 5.043 4.03-.704 3.113-.39 5.588.988 6.38.32.187.69.275 1.102.275 1.345 0 3.107-.96 4.888-2.624 1.78 1.654 3.542 2.603 4.887 2.603.41 0 .783-.09 1.106-.275 1.374-.792 1.683-3.263.973-6.365C22.02 15.096 24 13.59 24 12.004c0-1.59-1.99-3.097-5.043-4.032.704-3.11.39-5.587-.988-6.38-.318-.184-.688-.277-1.092-.278zm-.005 1.09v.006c.225 0 .406.044.558.127.666.382.955 1.835.73 3.704-.054.46-.142.945-.25 1.44-.96-.236-2.006-.417-3.107-.534-.66-.905-1.345-1.727-2.035-2.447 1.592-1.48 3.087-2.292 4.105-2.295zm-9.77.02c1.012 0 2.514.808 4.11 2.28-.686.72-1.37 1.537-2.02 2.442-1.107.117-2.154.298-3.113.538-.112-.49-.195-.964-.254-1.42-.23-1.868.054-3.32.714-3.707.19-.09.4-.127.563-.132zm4.882 3.05c.455.468.91.992 1.36 1.564-.44-.02-.89-.034-1.36-.034-.47 0-.92.014-1.36.034.44-.572.895-1.096 1.36-1.564zM12 8.1c.74 0 1.477.034 2.202.093.406.582.802 1.203 1.183 1.86.372.64.71 1.29 1.018 1.946-.308.655-.646 1.31-1.013 1.95-.38.66-.773 1.288-1.18 1.87-.728.063-1.466.098-2.21.098-.74 0-1.477-.035-2.202-.093-.406-.582-.802-1.204-1.183-1.86-.372-.64-.71-1.29-1.018-1.946.303-.657.646-1.313 1.013-1.954.38-.66.773-1.286 1.18-1.866.728-.064 1.466-.098 2.21-.098zm-3.635.254c-.24.377-.48.763-.704 1.16-.225.39-.435.782-.635 1.174-.265-.656-.49-1.31-.676-1.947.64-.15 1.315-.283 2.015-.386zm7.26 0c.695.103 1.365.23 2.006.387-.18.632-.405 1.282-.66 1.933-.2-.39-.41-.783-.64-1.174-.225-.392-.465-.774-.705-1.146zm3.063.675c.484.15.944.317 1.375.498 1.732.74 2.852 1.708 2.852 2.476-.005.768-1.125 1.74-2.857 2.475-.42.18-.88.342-1.355.493-.28-.958-.646-1.956-1.1-2.98.45-1.017.81-2.01 1.085-2.964zm-13.395.004c.278.96.645 1.957 1.1 2.98-.45 1.017-.812 2.01-1.086 2.964-.484-.15-.944-.318-1.37-.5-1.732-.737-2.852-1.706-2.852-2.474 0-.768 1.12-1.742 2.852-2.476.42-.18.88-.342 1.356-.494zm11.678 4.28c.265.657.49 1.312.676 1.948-.64.157-1.316.29-2.016.39.24-.375.48-.762.705-1.158.225-.39.435-.788.636-1.18zm-9.945.02c.2.392.41.783.64 1.175.23.39.465.772.705 1.143-.695-.102-1.365-.23-2.006-.386.18-.63.406-1.282.66-1.933zM17.92 16.32c.112.493.2.968.254 1.423.23 1.868-.054 3.32-.714 3.708-.147.09-.338.128-.563.128-1.012 0-2.514-.807-4.11-2.28.686-.72 1.37-1.536 2.02-2.44 1.107-.118 2.154-.3 3.113-.54zm-11.83.01c.96.234 2.006.415 3.107.532.66.905 1.345 1.727 2.035 2.446-1.595 1.483-3.092 2.295-4.11 2.295-.22-.005-.406-.05-.553-.132-.666-.38-.955-1.834-.73-3.703.054-.46.142-.944.25-1.438zm4.56.64c.44.02.89.034 1.36.034.47 0 .92-.014 1.36-.034-.44.572-.895 1.095-1.36 1.56-.465-.467-.92-.992-1.36-1.56z"/>
+      </svg>
+    )
+  },
+  {
+    name: 'Next.js',
+    color: '#000000',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+        <path d="M11.5725 0c-.1763 0-.3098.0013-.3584.0067-.0516.0053-.2159.021-.3636.0328-3.4088.3073-6.6017 2.1463-8.624 4.9728C1.1004 6.584.3802 8.3666.1082 10.255c-.0962.659-.108.8537-.108 1.7474s.012 1.0884.108 1.7476c.652 4.506 3.8591 8.2919 8.2087 9.6945.7789.2511 1.6.4223 2.5337.5255.3636.04 1.9354.04 2.299 0 1.6117-.1783 2.9772-.577 4.3237-1.2643.2065-.1056.2464-.1337.2183-.1573-.0188-.0139-.8987-1.1938-1.9543-2.62l-1.919-2.592-2.4047-3.5583c-1.3231-1.9564-2.4117-3.556-2.4211-3.556-.0094-.0026-.0187 1.5787-.0235 3.509-.0067 3.3802-.0093 3.5162-.0516 3.596-.061.115-.108.1618-.2064.2134-.075.0374-.1408.0445-.5429.0445h-.4570l-.0859-.0444c-.0516-.0267-.094-.0623-.1020-.0802-.0204-.0374-.0267-.1204-.0267-3.5568V7.2066l.0469-.0802c.0267-.0374.0802-.0975.1138-.1198.0516-.0356.1078-.0443.4570-.0443.3857 0 .4570.0113.5429.0824.0328.0262 1.3771 2.0503 2.9869 4.4968l6.2856 9.5496.1463.217c.0516.0746.1078.1392.1295.1436.023.0067 1.1137-.6435 1.6061-1.0117C22.7371 20.0764 23.8667 16.6648 24 12.995c.0086-.5527.0086-1.4434 0-1.9961-.1304-6.5017-3.7532-12.3008-9.2757-14.8284C13.3002.3325 12.44.0962 11.5725 0z"/>
+      </svg>
+    )
+  },
+  {
+    name: 'Tailwind',
+    color: '#06B6D4',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+        <path d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C16.337 6.182 14.976 4.8 12.001 4.8zM6.001 12c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624 1.177 1.194 2.538 2.576 5.512 2.576 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.337 13.382 8.976 12 6.001 12z"/>
+      </svg>
+    )
+  },
+  {
+    name: 'Node.js',
+    color: '#339933',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+        <path d="M11.998 24c-.321 0-.641-.084-.922-.247l-2.936-1.737c-.438-.245-.224-.332-.08-.383.585-.203.703-.25 1.328-.606.065-.037.151-.023.218.017l2.256 1.339c.082.045.197.045.272 0l8.795-5.076c.082-.047.134-.141.134-.238V6.921c0-.099-.053-.192-.137-.242l-8.791-5.072c-.081-.047-.189-.047-.271 0L2.46 6.68c-.085.05-.139.143-.139.242v10.148c0 .097.054.189.139.235l2.409 1.392c1.307.654 2.108-.116 2.108-.889V7.787c0-.142.114-.253.255-.253h1.117c.139 0 .254.112.254.253v10.021c0 1.745-.95 2.745-2.604 2.745-.508 0-.909 0-2.026-.551L1.534 18.55c-.57-.327-.922-.936-.922-1.592V6.921c0-.658.353-1.267.922-1.593L10.329.252c.551-.318 1.284-.318 1.84 0l8.795 5.076c.57.326.922.935.922 1.593v10.037c0 .656-.353 1.265-.922 1.592l-8.795 5.076c-.282.163-.601.247-.922.247h.751zm2.202-7.296c-3.841 0-4.64-1.76-4.64-3.24 0-.141.113-.254.254-.254h1.138c.127 0 .233.092.253.217.172 1.16.684 1.745 2.995 1.745 1.842 0 2.628-.418 2.628-1.396 0-.565-.223-.985-3.089-1.267-2.393-.235-3.87-.766-3.87-2.682 0-1.767 1.488-2.82 3.983-2.82 2.802 0 4.188.974 4.362 3.067a.259.259 0 01-.254.274h-1.14c-.119 0-.225-.086-.248-.202-.276-1.227-.946-1.62-2.72-1.62-2.004 0-2.237.7-2.237 1.224 0 .64.275.827 2.997 1.188 2.698.357 3.967.86 3.967 2.75 0 1.907-1.584 3.016-4.35 3.016l-.008-.001z"/>
+      </svg>
+    )
+  },
+  {
+    name: 'Python',
+    color: '#3776AB',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+        <path d="M14.25.18l.9.2.73.26.59.3.45.32.34.34.25.34.16.33.1.3.04.26.02.2-.01.13V8.5l-.05.63-.13.55-.21.46-.26.38-.3.31-.33.25-.35.19-.35.14-.33.1-.3.07-.26.04-.21.02H8.77l-.69.05-.59.14-.5.22-.41.27-.33.32-.27.35-.2.36-.15.37-.1.35-.07.32-.04.27-.02.21v3.06H3.17l-.21-.03-.28-.07-.32-.12-.35-.18-.36-.26-.36-.36-.35-.46-.32-.59-.28-.73-.21-.88-.14-1.05-.05-1.23.06-1.22.16-1.04.24-.87.32-.71.36-.57.4-.44.42-.33.42-.24.4-.16.36-.1.32-.05.24-.01h.16l.06.01h8.16v-.83H6.18l-.01-2.75-.02-.37.05-.34.11-.31.17-.28.25-.26.31-.23.38-.2.44-.18.51-.15.58-.12.64-.1.71-.06.77-.04.84-.02 1.27.05zm-6.3 1.98l-.23.33-.08.41.08.41.23.34.33.22.41.09.41-.09.33-.22.23-.34.08-.41-.08-.41-.23-.33-.33-.22-.41-.09-.41.09zm13.09 3.95l.28.06.32.12.35.18.36.27.36.35.35.47.32.59.28.73.21.88.14 1.04.05 1.23-.06 1.23-.16 1.04-.24.86-.32.71-.36.57-.4.45-.42.33-.42.24-.4.16-.36.09-.32.05-.24.02-.16-.01h-8.22v.82h5.84l.01 2.76.02.36-.05.34-.11.31-.17.29-.25.25-.31.24-.38.2-.44.17-.51.15-.58.13-.64.09-.71.07-.77.04-.84.01-1.27-.04-1.07-.14-.9-.2-.73-.25-.59-.3-.45-.33-.34-.34-.25-.34-.16-.33-.1-.3-.04-.25-.02-.2.01-.13v-5.34l.05-.64.13-.54.21-.46.26-.38.3-.32.33-.24.35-.2.35-.14.33-.1.3-.06.26-.04.21-.02.13-.01h5.84l.69-.05.59-.14.5-.21.41-.28.33-.32.27-.35.2-.36.15-.36.1-.35.07-.32.04-.28.02-.21V6.07h2.09l.14.01zm-6.47 14.25l-.23.33-.08.41.08.41.23.33.33.23.41.08.41-.08.33-.23.23-.33.08-.41-.08-.41-.23-.33-.33-.23-.41-.08-.41.08z"/>
+      </svg>
+    )
+  },
+  {
+    name: 'PostgreSQL',
+    color: '#336791',
+    icon: (
+      <svg viewBox="0 0 32 32" fill="currentColor" className="w-6 h-6">
+        <path d="M24.295 9.929c-0.010 0.155-0.082 0.292-0.191 0.387l-0.001 0.001c-0.131 0.143-0.306 0.243-0.504 0.278l-0.005 0.001c-0.028 0.004-0.061 0.007-0.094 0.007h-0c-0.001 0-0.003 0-0.004 0-0.312 0-0.58-0.189-0.694-0.46l-0.002-0.005c-0.030-0.221 0.33-0.388 0.701-0.44s0.764 0.011 0.794 0.231zM14.385 10.443c-0.121 0.311-0.418 0.528-0.766 0.528-0.004 0-0.007-0-0.011-0h0.001c-0 0-0 0-0 0-0.036 0-0.070-0.003-0.105-0.007l0.004 0c-0.261-0.047-0.483-0.191-0.63-0.392l-0.002-0.003c-0.082-0.094-0.132-0.219-0.132-0.354 0-0 0-0.001 0-0.001v0c0.012-0.077 0.055-0.143 0.115-0.185l0.001-0.001c0.152-0.084 0.334-0.133 0.528-0.133 0.083 0 0.164 0.009 0.242 0.026l-0.007-0.001c0.395 0.055 0.803 0.242 0.764 0.523zM25.403 18.086l-0.107-0.134-0.044-0.055c0.457-0.846 0.725-1.853 0.725-2.921 0-0.488-0.056-0.962-0.162-1.418l0.008 0.042c-0.070-0.453-0.111-0.976-0.111-1.508 0-0.007 0-0.014 0-0.021v0.001c0.023-0.501 0.076-0.97 0.158-1.429l-0.010 0.066c0.089-0.464 0.14-0.998 0.14-1.544 0-0.051-0-0.101-0.001-0.151l0 0.008c0.012-0.049 0.019-0.104 0.019-0.162 0-0.027-0.002-0.053-0.004-0.079l0 0.003c-0.4-1.58-1.151-2.949-2.168-4.073l0.007 0.008c-0.911-1.068-2.031-1.929-3.3-2.523l-0.060-0.025c0.696-0.149 1.496-0.234 2.316-0.234 0.075 0 0.15 0.001 0.225 0.002l-0.011-0c0.045-0.001 0.097-0.002 0.15-0.002 2.378 0 4.496 1.109 5.866 2.838l0.012 0.016c0.028 0.036 0.056 0.077 0.080 0.12l0.003 0.005c0.904 1.694-0.345 7.842-3.732 13.172zM25.117 9.322c-0.016 0.455-0.064 0.886-0.14 1.307l0.008-0.055c-0.078 0.425-0.134 0.931-0.157 1.445l-0.001 0.025c-0 0.017-0 0.036-0 0.056 0 0.567 0.042 1.124 0.124 1.668l-0.008-0.061c0.085 0.377 0.134 0.809 0.134 1.254 0 0.763-0.144 1.493-0.407 2.162l0.014-0.040c-0.076-0.131-0.155-0.289-0.224-0.453l-0.011-0.029c-0.066-0.159-0.209-0.416-0.406-0.77-0.769-1.38-2.571-4.611-1.649-5.929 0.474-0.678 1.676-0.707 2.722-0.579zM24.406 20.907c-0.051-1.039 0.336-1.148 0.746-1.263q0.085-0.023 0.169-0.051c0.050 0.044 0.105 0.087 0.162 0.125l0.005 0.003c0.62 0.273 1.342 0.431 2.102 0.431 0.592 0 1.161-0.096 1.693-0.274l-0.038 0.011c-0.344 0.293-0.736 0.544-1.16 0.738l-0.031 0.013c-0.644 0.264-1.391 0.429-2.173 0.454l-0.010 0c-0.119 0.018-0.256 0.029-0.395 0.029-0.386 0-0.754-0.080-1.087-0.224l0.018 0.007zM23.293 22.933c-0.021 0.221-0.045 0.47-0.077 0.745l-0.182 0.548c-0.014 0.040-0.022 0.086-0.023 0.134v0c0.001 0.027 0.001 0.058 0.001 0.089 0 0.355-0.053 0.699-0.151 1.022l0.006-0.025c-0.116 0.389-0.196 0.84-0.223 1.305l-0.001 0.016c-0.052 1.684-1.355 3.047-3.008 3.194l-0.013 0.001c-1.894 0.406-2.23-0.621-2.526-1.527q-0.045-0.142-0.096-0.283c-0.16-0.652-0.252-1.401-0.252-2.171 0-0.36 0.020-0.715 0.059-1.065l-0.004 0.043c0.006-0.128 0.009-0.279 0.009-0.43 0-1.026-0.154-2.016-0.441-2.948l0.019 0.071q0.008-0.55 0.024-1.114c0-0.003 0-0.008 0-0.012 0-0.046-0.007-0.090-0.020-0.132l0.001 0.003c-0.014-0.1-0.033-0.188-0.058-0.273l0.003 0.013c-0.141-0.521-0.496-0.941-0.964-1.164l-0.011-0.005c-0.176-0.088-0.384-0.14-0.605-0.14-0.104 0-0.205 0.011-0.302 0.033l0.009-0.002c0.128-0.47 0.26-0.854 0.412-1.228l-0.026 0.073 0.066-0.177c0.074-0.2 0.167-0.407 0.266-0.626 0.546-1.124 0.865-2.445 0.865-3.841 0-0.938-0.144-1.842-0.411-2.692l0.017 0.063c-0.183-1.108-1.135-1.943-2.281-1.943-0.18 0-0.356 0.021-0.524 0.060l0.016-0.003c-0.796 0.104-1.516 0.338-2.171 0.682l0.035-0.017q-0.124 0.063-0.245 0.13c0.091-2.147 0.896-4.090 2.181-5.615l-0.012 0.014c0.118-0.119 0.242-0.232 0.37-0.338l0.009-0.007c0.069-0.014 0.13-0.042 0.182-0.081l-0.001 0.001c0.893-0.654 2.014-1.047 3.227-1.047 0.097 0 0.193 0.002 0.288 0.007l-0.013-0.001c0.526 0.008 1.034 0.044 1.534 0.108l-0.067-0.007c2.043 0.393 3.787 1.463 5.032 2.963l0.011 0.014c0.748 0.869 1.354 1.887 1.766 2.998l0.022 0.069c-0.257-0.069-0.552-0.109-0.856-0.109-0.983 0-1.868 0.416-2.49 1.081l-0.002 0.002c-1.24 1.773 0.679 5.215 1.601 6.869 0.169 0.303 0.315 0.565 0.361 0.676 0.26 0.601 0.587 1.118 0.98 1.577l-0.007-0.008c0.087 0.109 0.171 0.214 0.236 0.306-0.501 0.144-1.401 0.478-1.319 2.146-0.015 0.195-0.053 0.558-0.104 1.018-0.054 0.269-0.098 0.597-0.123 0.93l-0.002 0.028zM14.091 17.219l-0.066 0.176c-0.137 0.328-0.279 0.745-0.397 1.172l-0.019 0.081c-0.893-0.013-1.695-0.395-2.261-1.001l-0.002-0.002c-0.632-0.667-1.020-1.57-1.020-2.564 0-0.198 0.015-0.392 0.045-0.582l-0.003 0.021c0.097-0.72 0.153-1.551 0.153-2.396 0-0.502-0.020-0.999-0.058-1.491l0.004 0.065c-0.006-0.107-0.012-0.201-0.015-0.275 0.805-0.611 1.824-0.98 2.929-0.98 0.132 0 0.262 0.005 0.391 0.015l-0.017-0.001c0.554 0.129 0.971 0.588 1.037 1.153l0.001 0.006c0.238 0.728 0.375 1.566 0.375 2.435 0 1.266-0.291 2.464-0.809 3.532l0.021-0.048c-0.105 0.233-0.204 0.453-0.289 0.682zM11.474 22.203c-0.205-0.052-0.385-0.128-0.549-0.227l0.009 0.005c0.172-0.073 0.375-0.134 0.585-0.173l0.019-0.003c1.604-0.33 1.851-0.563 2.392-1.25 0.124-0.157 0.264-0.336 0.459-0.553 0.040-0.045 0.072-0.099 0.091-0.159l0.001-0.003c0.213-0.189 0.34-0.137 0.546-0.052 0.227 0.125 0.395 0.336 0.46 0.587l0.001 0.007c0.023 0.065 0.037 0.139 0.037 0.217 0 0.125-0.035 0.242-0.095 0.341l0.002-0.003c-0.645 0.882-1.676 1.449-2.839 1.449-0.4 0-0.785-0.067-1.144-0.191l0.025 0.007zM3.967 15.846c-0.651-1.985-1.181-4.34-1.494-6.764l-0.021-0.199c-0.061-0.322-0.095-0.693-0.095-1.071 0-1.806 0.789-3.427 2.041-4.537l0.006-0.005c2.295-1.623 6.048-0.676 7.633-0.163l-0.012 0.012c-1.535 1.872-2.466 4.292-2.466 6.928 0 0.090 0.001 0.18 0.003 0.270l-0-0.013c-0 0.103 0.008 0.249 0.020 0.449 0.033 0.41 0.052 0.888 0.052 1.371 0 0.802-0.052 1.592-0.154 2.367l0.010-0.091c-0.033 0.206-0.051 0.444-0.051 0.686 0 1.231 0.482 2.35 1.269 3.177l-0.002-0.002q0.151 0.158 0.315 0.297c-0.433 0.464-1.375 1.49-2.377 2.696-0.709 0.853-1.199 0.689-1.36 0.636-0.685-0.368-1.222-0.939-1.538-1.631l-0.009-0.022c-0.684-1.252-1.286-2.708-1.730-4.232l-0.039-0.157zM30.445 19.403c-0.019-0.057-0.043-0.106-0.072-0.151l0.002 0.003c-0.174-0.329-0.596-0.427-1.259-0.29-2.066 0.426-2.866 0.164-3.156-0.024 1.617-2.452 2.918-5.292 3.751-8.326l0.049-0.209c0.339-1.313 0.997-4.403 0.153-5.913-0.059-0.112-0.122-0.208-0.192-0.298l0.003 0.004c-1.563-1.955-3.948-3.196-6.623-3.196-0.076 0-0.152 0.001-0.227 0.003l0.011-0c-0.042-0.001-0.091-0.001-0.141-0.001-1.342 0-2.633 0.22-3.838 0.625l0.085-0.025q-0.321-0.060-0.645-0.102c-0.488-0.093-1.053-0.151-1.631-0.16l-0.008-0c-0.083-0.004-0.18-0.006-0.278-0.006-1.315 0-2.538 0.394-3.557 1.071l0.024-0.015c-1.071-0.401-5.984-2.056-9.025 0.098-1.489 1.27-2.426 3.147-2.426 5.244 0 0.405 0.035 0.802 0.102 1.188l-0.006-0.041c0.335 2.698 0.879 5.126 1.632 7.461l-0.079-0.284c0.493 1.716 1.103 3.201 1.852 4.6l-0.061-0.124c0.433 0.984 1.182 1.764 2.116 2.225l0.026 0.012c0.168 0.049 0.361 0.078 0.561 0.078 0.742 0 1.392-0.391 1.756-0.979l0.005-0.009c1.001-1.204 1.987-2.282 2.430-2.758 0.502 0.279 1.097 0.451 1.731 0.471l0.006 0 0.001 0.005q-0.158 0.188-0.309 0.382c-0.424 0.538-0.512 0.649-1.875 0.93-0.388 0.080-1.418 0.292-1.433 1.014-0 0.004-0 0.008-0 0.013 0 0.147 0.043 0.284 0.117 0.399l-0.002-0.003c0.312 0.395 0.751 0.678 1.254 0.788l0.015 0.003c0.399 0.13 0.859 0.205 1.335 0.205 1.1 0 2.106-0.398 2.884-1.058l-0.006 0.005c-0.024 0.418-0.037 0.908-0.037 1.401 0 1.753 0.171 3.467 0.496 5.125l-0.027-0.167c0.382 1.373 1.616 2.367 3.084 2.38h0.002c0.369-0.003 0.726-0.046 1.070-0.124l-0.033 0.006c1.919-0.171 3.431-1.705 3.567-3.619l0.001-0.012c0.188-1.088 0.502-3.593 0.673-5.125 0.008-0.065 0.034-0.123 0.072-0.171l-0.001 0.001c0.001-0.001 0.087-0.059 0.534 0.038l0.055 0.009 0.317 0.028 0.019 0.001c0.095 0.004 0.207 0.007 0.319 0.007 1.024 0 2.002-0.2 2.895-0.564l-0.051 0.018c0.805-0.373 2.256-1.29 1.993-2.087z"/>
+      </svg>
+    )
+  },
+  {
+    name: 'Git',
+    color: '#F05032',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+        <path d="M23.546 10.93L13.067.452c-.604-.603-1.582-.603-2.188 0L8.708 2.627l2.76 2.76c.645-.215 1.379-.07 1.889.441.516.515.658 1.258.438 1.9l2.658 2.66c.645-.223 1.387-.078 1.9.435.721.72.721 1.884 0 2.604-.719.719-1.881.719-2.6 0-.539-.541-.674-1.337-.404-1.996L12.86 8.955v6.525c.176.086.342.203.488.348.713.721.713 1.883 0 2.6-.719.721-1.889.721-2.609 0-.719-.719-.719-1.879 0-2.598.182-.18.387-.316.605-.406V8.835c-.217-.091-.424-.222-.6-.401-.545-.545-.676-1.342-.396-2.009L7.636 3.7.45 10.881c-.6.605-.6 1.584 0 2.189L10.929 23.55c.603.604 1.582.604 2.188 0l10.43-10.43c.603-.603.603-1.582-.001-2.188z"/>
+      </svg>
+    )
+  },
+  {
+    name: 'Docker',
+    color: '#2496ED',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+        <path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954-5.43h2.118a.186.186 0 00.186-.186V3.574a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.186m0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.887c0 .102.082.185.185.186m-2.93 0h2.12a.186.186 0 00.184-.186V6.29a.185.185 0 00-.185-.185H8.1a.185.185 0 00-.185.185v1.887c0 .102.083.185.185.186m-2.964 0h2.119a.186.186 0 00.185-.186V6.29a.185.185 0 00-.185-.185H5.136a.186.186 0 00-.186.185v1.887c0 .102.084.185.186.186m5.893 2.715h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.083.185.185.185m-2.964 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.184-.186h-2.12a.186.186 0 00-.186.186v1.887c0 .102.084.185.186.185m-2.92 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.082.185.185.185M23.763 9.89c-.065-.051-.672-.51-1.954-.51-.338 0-.676.033-1.01.098-.31-1.128-.995-2.057-2.03-2.57.5-.758.44-1.716.16-2.308-.064-.13-.13-.31-.29-.31-.25 0-.83.108-1.6.86-.79-.19-1.66-.29-2.52-.29-1.02 0-2.05.13-2.98.35-.78-.75-1.36-.86-1.61-.86-.16 0-.22.18-.29.31-.28.59-.34 1.55.16 2.31-1.04.51-1.72 1.44-2.03 2.57-.33-.066-.67-.099-1.01-.099-1.28 0-1.89.46-1.95.51A.185.185 0 000 10.078v1.946c0 .023.006.046.017.066.23.508.68.982 1.32 1.364 1.25.75 2.99 1.16 4.89 1.16.95 0 1.85-.11 2.68-.32.83.19 1.73.32 2.68.32 1.9 0 3.64-.41 4.89-1.16.64-.382 1.09-.856 1.32-1.364.011-.02.017-.043.017-.066V10.078a.186.186 0 00-.035-.108"/>
+      </svg>
+    )
   }
 ];
 
-const statsData = [
-  { label: 'Years Coding', value: 2, suffix: '+' },
-  { label: 'Projects Shipped', value: 10, suffix: '+' },
-  { label: 'Core Technologies', value: 8, suffix: '+' }
-];
-
-const aboutPoints = [
+const EXPERIENCES = [
   {
-    title: 'Full-Stack Architect',
-    description: 'I deliver end-to-end web solutions that reduce development time by 40% while maintaining enterprise-grade security and performance standards.'
+    yearBadge: "2025",
+    role: "Software Engineering Intern",
+    company: "SimpliSolve",
+    dates: "Jul 2025 – Present",
+    summary:
+      "Building internal web platforms and tooling. Shipped features end-to-end with Next.js, TypeScript, Node, Postgres, Prisma; implemented role-based dashboards, upload/processing workflows, and developer ergonomics (CI checks, error logging, docs).",
+    tech: ["Next.js","TypeScript","Node.js","Postgres","Prisma","CI/CD"]
   },
   {
-    title: 'AI Integration Specialist',
-    description: 'I build intelligent systems using RAG and multi-agent architectures that automate complex workflows and improve user decision-making by 3x.'
-  },
-  {
-    title: 'Scalability Expert',
-    description: 'I design distributed systems and APIs that handle millions of requests while maintaining sub-100ms response times and 99.9% uptime.'
+    yearBadge: "2025",
+    role: "Undergraduate Research Assistant",
+    company: "UT Dallas — Dr. Latifur Khan's Lab",
+    dates: "Sep 2025 – Present",
+    summary:
+      "Applied AI/RAG work: prototyping retrieval pipelines (pgvector + BM25), building evaluation harnesses, curating datasets, and experimenting with agent memory/orchestration in Python on the lab GPU environment.",
+    tech: ["Python","RAG","pgvector","BM25","Evaluation"]
   }
 ];
 
 export default function SectionAbout() {
-  const containerRef = useRef<HTMLElement>(null);
-  const [isMounted, setIsMounted] = useState(false);
-  
-  // Get scroll progress for the entire section
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start center", "end start"]
-  });
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-  
-  // Create motion values for scroll-triggered animations
-  const shouldAnimate = isMounted && !MOTION_DISABLED;
-  
-
-  // Create scroll-triggered animations for different sections
-  const headerY = useTransform(scrollYProgress, [0, 0.2], [100, 0]);
-  const headerOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
-  const aboutCardsY = useTransform(scrollYProgress, [0.1, 0.4], [100, 0]);
-  const aboutCardsOpacity = useTransform(scrollYProgress, [0.1, 0.4], [0, 1]);
-  const timelineY = useTransform(scrollYProgress, [0.3, 0.6], [100, 0]);
-  const timelineOpacity = useTransform(scrollYProgress, [0.3, 0.6], [0, 1]);
-  const statsY = useTransform(scrollYProgress, [0.5, 0.8], [100, 0]);
-  const statsOpacity = useTransform(scrollYProgress, [0.5, 0.8], [0, 1]);
-  const techStackY = useTransform(scrollYProgress, [0.7, 1], [100, 0]);
-  const techStackOpacity = useTransform(scrollYProgress, [0.7, 1], [0, 1]);
-
   return (
-    <section ref={containerRef} id="about" className="relative min-h-[80vh] py-8 lg:py-12">
-      {/* Main content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Animated Section Header */}
-        <motion.div
-          style={{
-            y: headerY,
-            opacity: headerOpacity
-          }}
-          className="text-center mb-8 lg:mb-12"
-        >
-          <motion.h2
-            className="text-5xl lg:text-7xl font-bold text-white mb-6"
-            initial={{ scale: 0.8, rotateX: 15 }}
-            whileInView={{ scale: 1, rotateX: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            viewport={{ once: true }}
-          >
-            About Me
-          </motion.h2>
-          <motion.p
-            className="text-xl lg:text-2xl text-zinc-300 max-w-3xl mx-auto leading-relaxed mb-8"
-            style={{ fontFamily: 'Exo 2, sans-serif', textShadow: '0 0 20px rgba(116,185,255,0.4)' }}
+    <>
+      {/* About Me Section */}
+      <section id="about" className="py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
           >
-            Transforming ideas into scalable, intelligent web applications that drive real business outcomes.
-          </motion.p>
-          <AnimatedDivider className="mt-8" />
-        </motion.div>
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+              About Me
+            </h2>
+            <div className="w-24 h-0.5 bg-gradient-to-r from-teal-400 to-purple-500 mx-auto" />
+          </motion.div>
 
-        {/* Scrolling Content with enhanced animations */}
-        <div className="space-y-6 lg:space-y-8">
-          {/* What I'm About - Enhanced with scroll triggers */}
-          <motion.div
-            style={{
-              y: aboutCardsY,
-              opacity: aboutCardsOpacity
-            }}
-            className="space-y-12"
-          >
-            <motion.h3
-              className="text-3xl lg:text-4xl font-bold text-white text-center"
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              viewport={{ once: true }}
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="grid lg:grid-cols-2 gap-12 items-center"
             >
-              What I&apos;m About
-            </motion.h3>
-            <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
-              {aboutPoints.map((point, index) => (
-                <motion.div
-                  key={point.title}
-                  initial={MOTION_DISABLED ? {} : { opacity: 0, y: 50, rotateX: 15 }}
-                  whileInView={MOTION_DISABLED ? {} : { opacity: 1, y: 0, rotateX: 0 }}
-                  transition={{
-                    delay: index * 0.2,
-                    duration: 0.8,
-                    ease: "easeOut"
-                  }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  className="relative group"
-                  whileHover={MOTION_DISABLED ? {} : {
-                    y: -10,
-                    transition: { duration: 0.3 }
-                  }}
-                >
-                    <div className="relative p-6 rounded-xl bg-white/[0.02] backdrop-blur-xl border border-white/5 transition-all duration-500 group-hover:bg-white/[0.04] group-hover:border-white/10 overflow-hidden">
-                      {/* Liquid glass effects */}
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-teal-400/3 to-purple-500/3 opacity-60" />
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-white/3 to-transparent" />
+              <div className="space-y-6">
+                <h3 className="text-2xl font-bold text-white">
+                  Building the Future, One Line at a Time
+                </h3>
 
-                      {/* Flowing liquid effect */}
-                      <motion.div
-                        className="absolute inset-0 rounded-xl opacity-15"
-                        animate={{
-                          background: [
-                            'radial-gradient(circle at 30% 40%, rgba(20, 184, 166, 0.08) 0%, transparent 50%)',
-                            'radial-gradient(circle at 70% 60%, rgba(139, 92, 246, 0.08) 0%, transparent 50%)',
-                            'radial-gradient(circle at 30% 40%, rgba(20, 184, 166, 0.08) 0%, transparent 50%)'
-                          ]
-                        }}
-                        transition={{
-                          duration: 6,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                          delay: index * 0.5
-                        }}
-                      />
+                <div className="space-y-4 text-gray-300 text-lg leading-relaxed">
+                  <p>
+                    I'm <strong className="text-white">Shifat Islam Santo</strong>, a <strong className="text-teal-300">CS student at UT Dallas</strong> and a full-stack developer with over <strong className="text-white">two years of experience</strong> creating modern web applications that solve real-world problems.
+                  </p>
 
-                      <h4 className="relative text-lg font-semibold text-white mb-3 flex items-center gap-3">
-                        <div className="w-2 h-2 rounded-full bg-gradient-to-r from-teal-400 to-purple-500" />
-                        {point.title}
-                      </h4>
-                      <p className="relative text-gray-300 leading-relaxed">{point.description}</p>
-                    </div>
-                  </motion.div>
-                ))}
+                  <p>
+                    My expertise lies in building <strong className="text-teal-300">scalable systems</strong>, integrating <strong className="text-purple-300">AI technologies</strong>, and designing <strong className="text-blue-300">intuitive user experiences</strong> that help businesses grow.
+                  </p>
+
+                  <p>
+                    When I'm not coding, I explore <strong className="text-yellow-300">emerging tech</strong>, contribute to <strong className="text-green-300">open-source projects</strong>, and share what I learn with the <strong className="text-pink-300">developer community</strong>.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-4 pt-4">
+                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                    Available to get hired for internship
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Based in Dallas, TX
+                  </div>
+                </div>
               </div>
-            </motion.div>
 
-          {/* Timeline with scroll triggers */}
-          <motion.div
-            style={{
-              y: timelineY,
-              opacity: timelineOpacity
-            }}
-          >
-            <TimelineMini items={timelineData} />
-          </motion.div>
-
-          {/* Stats with scroll triggers */}
-          <motion.div
-            style={{
-              y: statsY,
-              opacity: statsOpacity
-            }}
-          >
-            <Stats stats={statsData} />
-          </motion.div>
-
-          {/* Tech Stack with scroll triggers */}
-          <motion.div
-            style={{
-              y: techStackY,
-              opacity: techStackOpacity
-            }}
-            className="space-y-8"
-          >
-            <motion.h3
-              className="text-3xl lg:text-4xl font-bold text-white text-center"
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              viewport={{ once: true }}
-            >
-              Core Technologies
-            </motion.h3>
-              <div className="overflow-hidden relative">
-                <motion.div
-                  animate={{
-                    x: [0, "-50%"]
-                  }}
-                  transition={{
-                    duration: 15,
-                    repeat: Infinity,
-                    ease: "linear"
-                  }}
-                  className="flex gap-4 whitespace-nowrap w-max"
-                >
-                  {/* First set of tech tags */}
-                  {['Next.js', 'Node.js', 'PostgreSQL', 'Python', 'TypeScript', 'React', 'Tailwind CSS', 'Framer Motion'].map((tech, index) => (
-                    <motion.span
-                      key={`first-${tech}`}
-                      initial={MOTION_DISABLED ? {} : { opacity: 0, scale: 0.8 }}
-                      whileInView={MOTION_DISABLED ? {} : { opacity: 1, scale: 1 }}
-                      transition={{ delay: index * 0.05, duration: 0.3 }}
-                      viewport={{ once: true }}
-                      className="px-4 py-2 text-sm bg-white/5 text-teal-300 rounded-full border border-white/10 flex-shrink-0"
-                    >
-                      {tech}
-                    </motion.span>
-                  ))}
-                  {/* Duplicate set for seamless loop */}
-                  {['Next.js', 'Node.js', 'PostgreSQL', 'Python', 'TypeScript', 'React', 'Tailwind CSS', 'Framer Motion'].map((tech, index) => (
-                    <motion.span
-                      key={`second-${tech}-${index}`}
-                      className="px-4 py-2 text-sm bg-white/5 text-teal-300 rounded-full border border-white/10 flex-shrink-0"
-                    >
-                      {tech}
-                    </motion.span>
-                  ))}
-                </motion.div>
+              <div className="lg:justify-self-end">
+                <div className="relative">
+                  <div className="w-80 h-80 rounded-2xl bg-gradient-to-br from-teal-400/20 via-purple-500/20 to-blue-500/20 flex items-center justify-center border border-white/10">
+                    <div className="text-white/60 text-6xl font-bold">SR</div>
+                  </div>
+                  <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-teal-400 to-purple-500 rounded-full blur-xl opacity-60" />
+                  <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full blur-xl opacity-40" />
+                </div>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
+
+      {/* Skills Section */}
+      <section id="skills" className="py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+              Skills & Technologies
+            </h2>
+            <div className="w-24 h-0.5 bg-gradient-to-r from-teal-400 to-purple-500 mx-auto" />
+          </motion.div>
+
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8 justify-items-center"
+            >
+              {techStack.map((tech, index) => (
+                <motion.div
+                  key={tech.name}
+                  initial={{ opacity: 0, scale: 0.5, rotateY: 180 }}
+                  whileInView={{ opacity: 1, scale: 1, rotateY: 0 }}
+                  transition={{
+                    duration: 0.6,
+                    delay: index * 0.1,
+                    type: "spring",
+                    stiffness: 100
+                  }}
+                  whileHover={{
+                    scale: 1.1,
+                    rotateY: 10,
+                    rotateX: 10,
+                    y: -10,
+                    transition: { duration: 0.3 }
+                  }}
+                  className="group cursor-pointer"
+                >
+                  {/* Hexagonal Container */}
+                  <div className="relative">
+                    {/* Hexagon Background */}
+                    <div
+                      className="w-20 h-20 flex items-center justify-center relative"
+                      style={{
+                        clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                        border: '2px solid rgba(255, 255, 255, 0.15)'
+                      }}
+                    >
+                      {/* Tech Icon */}
+                      <div className="text-white group-hover:scale-110 transition-transform duration-300">
+                        {tech.icon}
+                      </div>
+
+                      {/* Hover Glow Effect */}
+                      <div
+                        className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-300"
+                        style={{
+                          clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+                          backgroundColor: tech.color,
+                          filter: 'blur(8px)'
+                        }}
+                      />
+                    </div>
+
+                    {/* Tech Name */}
+                    <div className="mt-3 text-center">
+                      <span className="text-xs font-medium text-gray-400 group-hover:text-white transition-colors duration-300">
+                        {tech.name}
+                      </span>
+                    </div>
+
+                    {/* Background Glow */}
+                    <div
+                      className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-xl"
+                      style={{ backgroundColor: tech.color }}
+                    />
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Experience Section */}
+      <section id="experience" className="py-24 lg:py-32">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+              Experience
+            </h2>
+            <div className="w-24 h-0.5 bg-gradient-to-r from-teal-400 to-purple-500 mx-auto" />
+          </motion.div>
+
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="space-y-6"
+            >
+              {EXPERIENCES.map((exp, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.2 }}
+                  whileHover={{
+                    scale: 1.01,
+                    transition: { duration: 0.3 }
+                  }}
+                  className="group relative flex gap-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300 cursor-pointer"
+                >
+                  {/* Radial glow effect */}
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-teal-400/10 via-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl" />
+
+                  <div className="flex-shrink-0 relative z-10">
+                    <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-purple-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                      {exp.yearBadge}
+                    </div>
+                  </div>
+
+                  <div className="flex-1 relative z-10">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+                      <h4 className="text-xl font-semibold text-white">{exp.role}</h4>
+                      <span className="text-sm text-teal-300 font-medium">{exp.dates}</span>
+                    </div>
+                    <p className="text-purple-300 font-medium mb-3">{exp.company}</p>
+                    <p className="text-gray-300 leading-relaxed mb-4">{exp.summary}</p>
+
+                    {/* Tech stack */}
+                    <div className="flex flex-wrap gap-2">
+                      <span className="text-xs text-gray-400 font-medium mr-2">Tech:</span>
+                      {exp.tech.map((tech, techIndex) => (
+                        <span
+                          key={techIndex}
+                          className="px-2 py-1 text-xs bg-white/10 text-gray-300 rounded-md border border-white/20"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

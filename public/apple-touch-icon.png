@@ -1,0 +1,32 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="180" height="180" rx="22" fill="url(#gradient)"/>
+
+  <!-- Knight Chess Piece -->
+  <g transform="translate(45, 22)">
+    <!-- Knight Head -->
+    <path d="M28 42C28 42 21 35 14 42C7 49 8.75 56 15.75 59.5L17.5 63L24.5 61.25L29.75 66.5L35 63L38.5 56L36.75 49L31.5 45.5L28 42Z" fill="white" opacity="0.9"/>
+
+    <!-- Knight Mane -->
+    <path d="M15.75 42C15.75 42 12.25 38.5 8.75 40.25C5.25 42 7 45.5 10.5 47.25L15.75 42Z" fill="white" opacity="0.7"/>
+
+    <!-- Knight Body/Base -->
+    <path d="M10.5 63L45.5 63L49 70L47.25 84L43.75 98L40.25 112L36.75 119L8.75 119L5.25 112L1.75 98L-1.75 84L0 70L3.5 63L10.5 63Z" fill="white" opacity="0.9"/>
+
+    <!-- Knight Eye -->
+    <circle cx="22.75" cy="52.5" r="1.4" fill="#1a1a1a"/>
+  </g>
+
+  <!-- Text -->
+  <text x="90" y="147" font-family="Orbitron, monospace" font-size="16" font-weight="600" text-anchor="middle" fill="white" opacity="0.9">
+    OneKnight
+  </text>
+
+  <!-- Gradient Definition -->
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2d2d2d;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0a0a0a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>
