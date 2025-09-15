@@ -61,7 +61,7 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
-              Let's Connect
+              Let&apos;s Connect
             </h2>
             <div className="w-24 h-0.5 bg-gradient-to-r from-teal-400 to-purple-500 mx-auto" />
           </div>
@@ -69,7 +69,7 @@ export default function Home() {
           <div className="max-w-4xl mx-auto">
             <div className="text-center space-y-8">
               <p className="text-xl text-gray-300 leading-relaxed max-w-2xl mx-auto">
-                I'm always interested in new opportunities and exciting projects.
+                I&apos;m always interested in new opportunities and exciting projects.
                 Whether you want to collaborate or just say hello, feel free to reach out!
               </p>
 

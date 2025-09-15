@@ -166,7 +166,7 @@ export default function SectionAbout() {
 
                 <div className="space-y-4 text-gray-300 text-lg leading-relaxed">
                   <p>
-                    I'm <strong className="text-white">Shifat Islam Santo</strong>, a <strong className="text-teal-300">CS student at UT Dallas</strong> and a full-stack developer with over <strong className="text-white">two years of experience</strong> creating modern web applications that solve real-world problems.
+                    I&apos;m <strong className="text-white">Shifat Islam Santo</strong>, a <strong className="text-teal-300">CS student at UT Dallas</strong> and a full-stack developer with over <strong className="text-white">two years of experience</strong> creating modern web applications that solve real-world problems.
                   </p>
 
                   <p>
@@ -174,7 +174,7 @@ export default function SectionAbout() {
                   </p>
 
                   <p>
-                    When I'm not coding, I explore <strong className="text-yellow-300">emerging tech</strong>, contribute to <strong className="text-green-300">open-source projects</strong>, and share what I learn with the <strong className="text-pink-300">developer community</strong>.
+                    When I&apos;m not coding, I explore <strong className="text-yellow-300">emerging tech</strong>, contribute to <strong className="text-green-300">open-source projects</strong>, and share what I learn with the <strong className="text-pink-300">developer community</strong>.
                   </p>
                 </div>
 
