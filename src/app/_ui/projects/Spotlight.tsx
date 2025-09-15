@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Project } from '../../_data/projects';
 import { reveal } from '../motion';
-import { MOTION_DISABLED } from '../hooks/useReducedMotion';
+import { MOTION_DISABLED } from '../motion';
 
 interface SpotlightProps {
   project: Project;
@@ -14,23 +14,28 @@ interface SpotlightProps {
 export default function Spotlight({ project, onOpenModal }: SpotlightProps) {
   const [isHovered, setIsHovered] = useState(false);
 
-  const cardVariants = MOTION_DISABLED ? {} : {
+  const cardVariants = MOTION_DISABLED ? {
+    hover: {}
+  } : {
     hover: {
       scale: 1.02,
       transition: {
         duration: 0.3,
-        ease: 'easeOut'
+        ease: [0.25, 0.1, 0.25, 1] as const
       }
     }
   };
 
-  const sheenVariants = MOTION_DISABLED ? {} : {
+  const sheenVariants = MOTION_DISABLED ? {
+    initial: {},
+    hover: {}
+  } : {
     initial: { x: '-100%' },
     hover: {
       x: '100%',
       transition: {
         duration: 2,
-        ease: 'easeInOut'
+        ease: [0.645, 0.045, 0.355, 1] as const
       }
     }
   };

@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import { Project } from '../../_data/projects';
-import { MOTION_DISABLED } from '../hooks/useReducedMotion';
+import { MOTION_DISABLED } from '../motion';
 
 interface ProjectModalProps {
   project: Project | null;
@@ -76,15 +76,21 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
 
   if (!project) return null;
 
-  const backdropVariants = MOTION_DISABLED ? {} : {
+  const backdropVariants = MOTION_DISABLED ? {
+    hidden: {},
+    visible: {}
+  } : {
     hidden: { opacity: 0 },
-    visible: { 
+    visible: {
       opacity: 1,
       transition: { duration: 0.2 }
     }
   };
 
-  const modalVariants = MOTION_DISABLED ? {} : {
+  const modalVariants = MOTION_DISABLED ? {
+    hidden: {},
+    visible: {}
+  } : {
     hidden: { 
       opacity: 0, 
       scale: 0.98,
@@ -96,7 +102,7 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
       y: 0,
       transition: { 
         duration: 0.3,
-        ease: 'easeOut'
+        ease: [0.25, 0.1, 0.25, 1] as const
       }
     }
   };

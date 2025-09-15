@@ -1,24 +1,13 @@
 'use client';
 
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
-import BioCard from './BioCard';
+import { useRef, useState, useEffect } from 'react';
 import TimelineMini from './TimelineMini';
 import Stats from './Stats';
 import { reveal } from '../motion';
-import { MOTION_DISABLED } from '../hooks/useReducedMotion';
+import { MOTION_DISABLED } from '../motion';
 import AnimatedDivider from '../AnimatedDivider';
 
-const bioData = {
-  name: 'Santo Rahman',
-  role: 'Full-Stack Developer & AI Specialist',
-  location: 'Dallas, TX',
-  bullets: [
-    'CS Student @ UT Dallas',
-    'AI & Multi-Agent Systems Expert', 
-    'Performance-Driven Development'
-  ]
-};
 
 const timelineData = [
   {
@@ -61,119 +50,215 @@ const aboutPoints = [
 
 export default function SectionAbout() {
   const containerRef = useRef<HTMLElement>(null);
-  const { scrollY } = useScroll();
+  const [isMounted, setIsMounted] = useState(false);
   
-  // Ambient parallax for decorative elements
-  const y1 = useTransform(scrollY, [0, 1000], [0, -50]);
-  const y2 = useTransform(scrollY, [0, 1000], [0, 30]);
+  // Get scroll progress for the entire section
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start center", "end start"]
+  });
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  
+  // Create motion values for scroll-triggered animations
+  const shouldAnimate = isMounted && !MOTION_DISABLED;
+  
+
+  // Create scroll-triggered animations for different sections
+  const headerY = useTransform(scrollYProgress, [0, 0.2], [100, 0]);
+  const headerOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
+  const aboutCardsY = useTransform(scrollYProgress, [0.1, 0.4], [100, 0]);
+  const aboutCardsOpacity = useTransform(scrollYProgress, [0.1, 0.4], [0, 1]);
+  const timelineY = useTransform(scrollYProgress, [0.3, 0.6], [100, 0]);
+  const timelineOpacity = useTransform(scrollYProgress, [0.3, 0.6], [0, 1]);
+  const statsY = useTransform(scrollYProgress, [0.5, 0.8], [100, 0]);
+  const statsOpacity = useTransform(scrollYProgress, [0.5, 0.8], [0, 1]);
+  const techStackY = useTransform(scrollYProgress, [0.7, 1], [100, 0]);
+  const techStackOpacity = useTransform(scrollYProgress, [0.7, 1], [0, 1]);
 
   return (
-    <section ref={containerRef} id="about" className="relative py-20 lg:py-32 overflow-hidden">
-      {/* Ambient decorative elements */}
-      {!MOTION_DISABLED && (
-        <>
-          <motion.div
-            style={{ y: y1 }}
-            className="absolute top-20 left-10 w-24 h-24 bg-teal-500/[0.04] rounded-full blur-xl hidden lg:block"
-          />
-          <motion.div
-            style={{ y: y2 }}
-            className="absolute bottom-32 right-16 w-32 h-32 bg-purple-500/[0.06] rounded-full blur-2xl hidden lg:block"
-          />
-        </>
-      )}
-
+    <section ref={containerRef} id="about" className="relative min-h-[80vh] py-8 lg:py-12">
+      {/* Main content */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Animated Section Header */}
         <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-10%' }}
-          variants={reveal}
-          className="text-center mb-16 lg:mb-24"
+          style={{
+            y: headerY,
+            opacity: headerOpacity
+          }}
+          className="text-center mb-8 lg:mb-12"
         >
-          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+          <motion.h2
+            className="text-5xl lg:text-7xl font-bold text-white mb-6"
+            initial={{ scale: 0.8, rotateX: 15 }}
+            whileInView={{ scale: 1, rotateX: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            viewport={{ once: true }}
+          >
             About Me
-          </h2>
+          </motion.h2>
+          <motion.p
+            className="text-xl lg:text-2xl text-zinc-300 max-w-3xl mx-auto leading-relaxed mb-8"
+            style={{ fontFamily: 'Exo 2, sans-serif', textShadow: '0 0 20px rgba(116,185,255,0.4)' }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            viewport={{ once: true }}
+          >
+            Transforming ideas into scalable, intelligent web applications that drive real business outcomes.
+          </motion.p>
           <AnimatedDivider className="mt-8" />
         </motion.div>
 
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
-          {/* Left Column - Sticky Bio Card */}
-          <div className="lg:col-span-4">
-            <BioCard {...bioData} />
-          </div>
-
-          {/* Right Column - Scrolling Content */}
-          <div className="lg:col-span-8 space-y-16">
-            {/* What I'm About */}
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-10%' }}
-              variants={reveal}
-              className="space-y-8"
+        {/* Scrolling Content with enhanced animations */}
+        <div className="space-y-6 lg:space-y-8">
+          {/* What I'm About - Enhanced with scroll triggers */}
+          <motion.div
+            style={{
+              y: aboutCardsY,
+              opacity: aboutCardsOpacity
+            }}
+            className="space-y-12"
+          >
+            <motion.h3
+              className="text-3xl lg:text-4xl font-bold text-white text-center"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              viewport={{ once: true }}
             >
-              <h3 className="text-2xl font-semibold text-white">What I'm About</h3>
-              <div className="grid sm:grid-cols-1 gap-6">
-                {aboutPoints.map((point, index) => (
-                  <motion.div
-                    key={point.title}
-                    initial={MOTION_DISABLED ? {} : { opacity: 0, x: 30 }}
-                    whileInView={MOTION_DISABLED ? {} : { opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1, duration: 0.5 }}
-                    viewport={{ once: true }}
-                    className="relative group"
-                  >
-                    <div className="p-6 rounded-xl bg-white/[0.04] backdrop-blur-sm border border-white/10 transition-all duration-300 group-hover:bg-white/[0.08] group-hover:border-white/20">
-                      <h4 className="text-lg font-semibold text-white mb-3 flex items-center gap-3">
+              What I&apos;m About
+            </motion.h3>
+            <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
+              {aboutPoints.map((point, index) => (
+                <motion.div
+                  key={point.title}
+                  initial={MOTION_DISABLED ? {} : { opacity: 0, y: 50, rotateX: 15 }}
+                  whileInView={MOTION_DISABLED ? {} : { opacity: 1, y: 0, rotateX: 0 }}
+                  transition={{
+                    delay: index * 0.2,
+                    duration: 0.8,
+                    ease: "easeOut"
+                  }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  className="relative group"
+                  whileHover={MOTION_DISABLED ? {} : {
+                    y: -10,
+                    transition: { duration: 0.3 }
+                  }}
+                >
+                    <div className="relative p-6 rounded-xl bg-white/[0.02] backdrop-blur-xl border border-white/5 transition-all duration-500 group-hover:bg-white/[0.04] group-hover:border-white/10 overflow-hidden">
+                      {/* Liquid glass effects */}
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-teal-400/3 to-purple-500/3 opacity-60" />
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-white/3 to-transparent" />
+
+                      {/* Flowing liquid effect */}
+                      <motion.div
+                        className="absolute inset-0 rounded-xl opacity-15"
+                        animate={{
+                          background: [
+                            'radial-gradient(circle at 30% 40%, rgba(20, 184, 166, 0.08) 0%, transparent 50%)',
+                            'radial-gradient(circle at 70% 60%, rgba(139, 92, 246, 0.08) 0%, transparent 50%)',
+                            'radial-gradient(circle at 30% 40%, rgba(20, 184, 166, 0.08) 0%, transparent 50%)'
+                          ]
+                        }}
+                        transition={{
+                          duration: 6,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          delay: index * 0.5
+                        }}
+                      />
+
+                      <h4 className="relative text-lg font-semibold text-white mb-3 flex items-center gap-3">
                         <div className="w-2 h-2 rounded-full bg-gradient-to-r from-teal-400 to-purple-500" />
                         {point.title}
                       </h4>
-                      <p className="text-gray-300 leading-relaxed">{point.description}</p>
+                      <p className="relative text-gray-300 leading-relaxed">{point.description}</p>
                     </div>
                   </motion.div>
                 ))}
               </div>
             </motion.div>
 
-            {/* Timeline */}
+          {/* Timeline with scroll triggers */}
+          <motion.div
+            style={{
+              y: timelineY,
+              opacity: timelineOpacity
+            }}
+          >
             <TimelineMini items={timelineData} />
+          </motion.div>
 
-            {/* Stats */}
+          {/* Stats with scroll triggers */}
+          <motion.div
+            style={{
+              y: statsY,
+              opacity: statsOpacity
+            }}
+          >
             <Stats stats={statsData} />
+          </motion.div>
 
-            {/* Tech Stack */}
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-10%' }}
-              variants={reveal}
-              className="space-y-6"
+          {/* Tech Stack with scroll triggers */}
+          <motion.div
+            style={{
+              y: techStackY,
+              opacity: techStackOpacity
+            }}
+            className="space-y-8"
+          >
+            <motion.h3
+              className="text-3xl lg:text-4xl font-bold text-white text-center"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              viewport={{ once: true }}
             >
-              <h3 className="text-xl font-semibold text-white">Core Technologies</h3>
-              <div className="flex flex-wrap gap-2">
-                {['Next.js', 'Node.js', 'PostgreSQL', 'Python', 'TypeScript', 'React', 'Tailwind CSS', 'Framer Motion'].map((tech, index) => (
-                  <motion.span
-                    key={tech}
-                    initial={MOTION_DISABLED ? {} : { opacity: 0, scale: 0.8 }}
-                    whileInView={MOTION_DISABLED ? {} : { opacity: 1, scale: 1 }}
-                    whileHover={MOTION_DISABLED ? {} : { 
-                      scale: 1.05,
-                      boxShadow: '0 0 0 1px rgba(20, 184, 166, 0.3), inset 0 0 4px rgba(20, 184, 166, 0.1)'
-                    }}
-                    whileTap={MOTION_DISABLED ? {} : { scale: 0.98 }}
-                    transition={{ delay: index * 0.05, duration: 0.3 }}
-                    viewport={{ once: true }}
-                    className="px-3 py-1.5 text-sm bg-white/5 text-teal-300 rounded-full border border-white/10 hover:bg-white/10 hover:border-white/20 transition-colors duration-200"
-                  >
-                    {tech}
-                  </motion.span>
-                ))}
+              Core Technologies
+            </motion.h3>
+              <div className="overflow-hidden relative">
+                <motion.div
+                  animate={{
+                    x: [0, "-50%"]
+                  }}
+                  transition={{
+                    duration: 15,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                  className="flex gap-4 whitespace-nowrap w-max"
+                >
+                  {/* First set of tech tags */}
+                  {['Next.js', 'Node.js', 'PostgreSQL', 'Python', 'TypeScript', 'React', 'Tailwind CSS', 'Framer Motion'].map((tech, index) => (
+                    <motion.span
+                      key={`first-${tech}`}
+                      initial={MOTION_DISABLED ? {} : { opacity: 0, scale: 0.8 }}
+                      whileInView={MOTION_DISABLED ? {} : { opacity: 1, scale: 1 }}
+                      transition={{ delay: index * 0.05, duration: 0.3 }}
+                      viewport={{ once: true }}
+                      className="px-4 py-2 text-sm bg-white/5 text-teal-300 rounded-full border border-white/10 flex-shrink-0"
+                    >
+                      {tech}
+                    </motion.span>
+                  ))}
+                  {/* Duplicate set for seamless loop */}
+                  {['Next.js', 'Node.js', 'PostgreSQL', 'Python', 'TypeScript', 'React', 'Tailwind CSS', 'Framer Motion'].map((tech, index) => (
+                    <motion.span
+                      key={`second-${tech}-${index}`}
+                      className="px-4 py-2 text-sm bg-white/5 text-teal-300 rounded-full border border-white/10 flex-shrink-0"
+                    >
+                      {tech}
+                    </motion.span>
+                  ))}
+                </motion.div>
               </div>
             </motion.div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
   );
 }

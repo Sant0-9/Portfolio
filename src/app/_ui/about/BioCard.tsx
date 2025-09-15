@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { fadeInUp } from '../motion';
-import { MOTION_DISABLED } from '../hooks/useReducedMotion';
+import { MOTION_DISABLED } from '../motion';
 
 interface BioCardProps {
   name: string;
@@ -10,9 +10,10 @@ interface BioCardProps {
   location: string;
   bullets: string[];
   avatar?: string;
+  topOffset?: number;
 }
 
-export default function BioCard({ name, role, location, bullets, avatar }: BioCardProps) {
+export default function BioCard({ name, role, location, bullets, avatar, topOffset = 96 }: BioCardProps) {
   const cardVariant = {
     hidden: fadeInUp.hidden,
     visible: {
@@ -31,25 +32,66 @@ export default function BioCard({ name, role, location, bullets, avatar }: BioCa
     boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 0 0 1px rgb(255 255 255 / 0.05)',
     transition: {
       duration: 0.3,
-      ease: 'easeOut'
+      ease: [0.25, 0.1, 0.25, 1] as const
     }
   };
 
   return (
-    <motion.div
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: '-10%' }}
-      variants={cardVariant}
-      className="sticky top-24 h-fit"
-    >
+    <div className="h-fit" style={{ marginTop: `${topOffset}px` }}>
       <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-10%' }}
+        variants={cardVariant}
         whileHover={hoverVariant}
         whileFocus={hoverVariant}
         tabIndex={0}
-        className="relative rounded-2xl bg-white/[0.08] backdrop-blur-sm border border-white/10 p-6 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/20"
+        className="relative rounded-2xl bg-white/[0.02] backdrop-blur-xl border border-white/5 p-6 transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-white/20 overflow-hidden"
+        style={{
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.06)'
+        }}
       >
-        <div className="space-y-6">
+        {/* Liquid glass effects */}
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-teal-400/3 to-purple-500/3 opacity-80" />
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/3 to-transparent" />
+
+        {/* Flowing liquid effect */}
+        <motion.div
+          className="absolute inset-0 rounded-2xl opacity-20"
+          animate={{
+            background: [
+              'radial-gradient(circle at 20% 50%, rgba(20, 184, 166, 0.1) 0%, transparent 50%)',
+              'radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%)',
+              'radial-gradient(circle at 50% 20%, rgba(20, 184, 166, 0.1) 0%, transparent 50%)',
+              'radial-gradient(circle at 50% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%)',
+              'radial-gradient(circle at 20% 50%, rgba(20, 184, 166, 0.1) 0%, transparent 50%)'
+            ]
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+
+        {/* Glass refraction lines */}
+        <div className="absolute inset-0 rounded-2xl overflow-hidden">
+          <motion.div
+            className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
+            animate={{
+              x: ['-100%', '100%']
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 1
+            }}
+          />
+        </div>
+        
+        {/* Content - positioned above glow effects */}
+        <div className="relative space-y-6">
           {avatar && (
             <div className="flex justify-center">
               <div className="relative w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-teal-400 to-purple-500 p-0.5">
@@ -91,6 +133,6 @@ export default function BioCard({ name, role, location, bullets, avatar }: BioCa
           </div>
         </div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }

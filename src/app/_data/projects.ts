@@ -19,47 +19,26 @@ export interface Project {
 
 export const projects: Project[] = [
   {
-    slug: 'tripwise',
-    title: 'Tripwise',
-    summary: 'AI-powered travel planner with RAG and interactive maps for personalized trip recommendations.',
-    tags: ['RAG', 'Maps', 'Next.js', 'AI'],
-    image: '/images/projects/tripwise.jpg',
+    slug: 'leo',
+    title: 'Leo',
+    summary: 'AI-powered personal assistant with advanced language understanding and multi-modal capabilities.',
+    tags: ['AI', 'Assistant', 'NLP', 'Machine Learning'],
+    image: '/images/projects/leo.jpg',
     links: {
       live: '#',
-      code: 'https://github.com/santo-rahman/tripwise'
+      code: 'https://github.com/santo-rahman/leo'
     },
-    status: 'wip',
+    status: 'live',
     highlights: [
-      'Advanced RAG system for travel recommendations',
-      'Interactive map integration with real-time data',
-      'Personalized itinerary generation',
-      'Multi-modal AI for travel planning',
-      'Real-time weather and local events integration'
+      'Advanced natural language processing',
+      'Multi-modal interaction capabilities',
+      'Personalized response generation',
+      'Context-aware conversations',
+      'Real-time learning and adaptation'
     ],
-    description: 'An intelligent travel planning platform that combines retrieval-augmented generation (RAG) with interactive mapping to create personalized travel experiences.',
-    role: 'Full-Stack Developer & AI Engineer',
-    techStack: ['Next.js', 'TypeScript', 'OpenAI API', 'Mapbox', 'PostgreSQL', 'Prisma', 'Tailwind CSS']
-  },
-  {
-    slug: 'lifeos',
-    title: 'LifeOS',
-    summary: 'Multi-agent personal operating system for life management and productivity optimization.',
-    tags: ['Agents', 'Memory', 'Next.js', 'AI'],
-    image: '/images/projects/lifeos.jpg',
-    links: {
-      code: 'https://github.com/santo-rahman/lifeos'
-    },
-    status: 'wip',
-    highlights: [
-      'Multi-agent architecture for different life domains',
-      'Persistent memory system across interactions',
-      'Natural language interface for all operations',
-      'Automated task and goal management',
-      'Integration with external productivity tools'
-    ],
-    description: 'A comprehensive personal operating system powered by multiple specialized AI agents that work together to manage different aspects of your life.',
-    role: 'Lead Developer & Architect',
-    techStack: ['Next.js', 'TypeScript', 'Multiple LLM APIs', 'Vector Database', 'Redis', 'PostgreSQL']
+    description: 'An intelligent personal assistant powered by cutting-edge AI technology, capable of understanding complex queries and providing contextual responses.',
+    role: 'AI Engineer & Lead Developer',
+    techStack: ['Python', 'Transformers', 'FastAPI', 'WebSocket', 'PostgreSQL', 'Docker']
   },
   {
     slug: 'barta',
@@ -80,7 +59,7 @@ export const projects: Project[] = [
     ],
     description: 'A sophisticated Bengali news platform that uses RAG technology to provide contextual understanding and analysis of Bengali news content.',
     role: 'Solo Developer',
-    techStack: ['Python', 'FastAPI', 'Bengali NLP', 'OpenAI API', 'PostgreSQL', 'Docker']
+    techStack: ['Python', 'FastAPI', 'Bengali NLP', 'External AI API', 'PostgreSQL', 'Docker']
   },
   {
     slug: 'portfolio',

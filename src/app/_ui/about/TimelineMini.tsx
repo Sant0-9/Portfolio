@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { reveal } from '../motion';
-import { MOTION_DISABLED } from '../hooks/useReducedMotion';
+import { MOTION_DISABLED } from '../motion';
 
 interface TimelineItem {
   phase: string;
@@ -21,7 +21,7 @@ export default function TimelineMini({ items }: TimelineMiniProps) {
         pathLength: 1,
         transition: {
           duration: 2,
-          ease: 'easeInOut',
+          ease: [0.645, 0.045, 0.355, 1] as const,
           delay: 0.5
         }
       };

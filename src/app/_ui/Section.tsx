@@ -3,7 +3,7 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { reveal, viewport } from './motion';
-import { MOTION_DISABLED } from './hooks/useReducedMotion';
+import { MOTION_DISABLED } from './motion';
 
 interface SectionProps {
   id?: string;
@@ -25,10 +25,10 @@ const maxWidthClasses = {
 };
 
 const paddingClasses = {
-  sm: 'py-12',
-  md: 'py-16',
-  lg: 'py-20',
-  xl: 'py-24'
+  sm: 'py-6',
+  md: 'py-8',
+  lg: 'py-12',
+  xl: 'py-16'
 };
 
 export default function Section({
@@ -48,7 +48,7 @@ export default function Section({
       <div className={`mx-auto px-6 lg:px-8 ${maxWidthClasses[maxWidth]}`}>
         {(heading || subheading) && (
           <motion.div
-            className="text-center mb-16"
+            className="text-center mb-8"
             initial="hidden"
             whileInView="visible"
             viewport={viewport}

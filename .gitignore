@@ -45,3 +45,16 @@ next-env.d.ts
 
 # os generated files
 Thumbs.db
+
+.txt
+
+# local AI tooling
+.claude/
+CLAUDE.md
+
+# env files
+.env
+
+# playwright/test artifacts
+test-results/
+playwright-report/

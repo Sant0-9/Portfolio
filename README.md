@@ -1,5 +1,7 @@
 # Solar System Portfolio - Detailed Requirements & Vision
 
+Status: 3D ready
+
 A cinematic 3D portfolio website where projects orbit as planets around a central sun, with immersive scroll-based interactions and animations.
 
 ## 🎬 **Cinematic User Experience Vision**

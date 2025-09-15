@@ -3,7 +3,7 @@
 import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { fadeInUp, dur, ease } from './motion';
-import { MOTION_DISABLED } from './hooks/useReducedMotion';
+import { MOTION_DISABLED } from './motion';
 
 interface Project {
   id: string;
@@ -122,7 +122,13 @@ function ProjectCard({ project, index = 0 }: ProjectCardProps) {
     >
       {/* Color indicator with subtle pulse */}
       <div className="flex items-start justify-between gap-4 mb-3">
-        <h3 className="text-xl font-semibold text-white group-hover:text-zinc-100 transition-colors">
+        <h3 
+          className="text-xl font-semibold text-white group-hover:text-cyan-300 transition-colors"
+          style={{ 
+            fontFamily: 'Orbitron, monospace',
+            textShadow: '0 0 8px rgba(0,240,255,0.3)'
+          }}
+        >
           {project.name}
         </h3>
         <motion.div
@@ -145,7 +151,13 @@ function ProjectCard({ project, index = 0 }: ProjectCardProps) {
         </motion.div>
       </div>
 
-      <p className="text-sm text-zinc-300 group-hover:text-zinc-200 transition-colors leading-relaxed mb-4">
+      <p 
+        className="text-sm text-zinc-300 group-hover:text-zinc-200 transition-colors leading-relaxed mb-4"
+        style={{ 
+          fontFamily: 'Exo 2, sans-serif',
+          textShadow: '0 0 5px rgba(116,185,255,0.2)'
+        }}
+      >
         {project.description}
       </p>
 
@@ -175,7 +187,9 @@ function ProjectCard({ project, index = 0 }: ProjectCardProps) {
             style={{ 
               borderColor: `${project.color}55`, 
               color: project.color, 
-              backgroundColor: `${project.color}1a` 
+              backgroundColor: `${project.color}1a`,
+              fontFamily: 'Exo 2, sans-serif',
+              textShadow: `0 0 5px ${project.color}40`
             }}
             variants={tagVariants}
             custom={tagIndex}

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import { Project } from '../../_data/projects';
 import { fadeInUp } from '../motion';
-import { MOTION_DISABLED } from '../hooks/useReducedMotion';
+import { MOTION_DISABLED } from '../motion';
 
 interface ProjectCardProps {
   project: Project;
@@ -17,18 +17,22 @@ export default function ProjectCard({ project, onOpenModal, onTagClick }: Projec
   const [isInView, setIsInView] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const cardVariants = MOTION_DISABLED ? {} : {
+  const cardVariants = MOTION_DISABLED ? {
+    hover: {}
+  } : {
     hover: {
       y: -6,
       boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.25), 0 0 0 1px rgb(255 255 255 / 0.1)',
       transition: {
         duration: 0.3,
-        ease: 'easeOut'
+        ease: [0.25, 0.1, 0.25, 1] as const
       }
     }
   };
 
-  const borderVariants = MOTION_DISABLED ? {} : {
+  const borderVariants = MOTION_DISABLED ? {
+    animate: {}
+  } : {
     animate: {
       background: [
         'linear-gradient(0deg, rgb(20 184 166), rgb(139 92 246))',
@@ -39,20 +43,23 @@ export default function ProjectCard({ project, onOpenModal, onTagClick }: Projec
       ],
       transition: {
         duration: 2,
-        ease: 'linear',
+        ease: 'linear' as const,
         repeat: Infinity
       }
     }
   };
 
-  const actionsVariants = MOTION_DISABLED ? {} : {
+  const actionsVariants = MOTION_DISABLED ? {
+    hidden: {},
+    visible: {}
+  } : {
     hidden: { opacity: 0, y: 10 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
         duration: 0.2,
-        ease: 'easeOut'
+        ease: [0.25, 0.1, 0.25, 1] as const
       }
     }
   };

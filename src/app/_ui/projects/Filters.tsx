@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { fadeInUp } from '../motion';
-import { MOTION_DISABLED } from '../hooks/useReducedMotion';
+import { MOTION_DISABLED } from '../motion';
 
 interface FiltersProps {
   tags: string[];
@@ -13,11 +13,14 @@ interface FiltersProps {
 export default function Filters({ tags, selectedTag, onTagSelect }: FiltersProps) {
   const allTags = ['All', ...tags];
 
-  const pillVariants = MOTION_DISABLED ? {} : {
+  const pillVariants = MOTION_DISABLED ? {
+    hover: {},
+    tap: {}
+  } : {
     hover: {
       scale: 1.04,
       transition: {
-        type: 'spring',
+        type: 'spring' as const,
         stiffness: 400,
         damping: 17
       }

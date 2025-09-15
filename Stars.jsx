@@ -1,8 +1,7 @@
-'use client';
-
+// 3D ready
 import { useState, useRef, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Points, PointMaterial } from "@react-three/drei";
+import { Points, PointMaterial, Preload } from "@react-three/drei";
 import * as random from "maath/random/dist/maath-random.esm";
 
 const Stars = (props) => {
@@ -16,7 +15,7 @@ const Stars = (props) => {
 
   return (
     <group rotation={[0, 0, Math.PI / 4]}>
-      <Points ref={ref} positions={sphere} stride={3} frustumCulled={false} {...props}>
+      <Points ref={ref} positions={sphere} stride={3} frustumCulled {...props}>
         <PointMaterial
           transparent
           color='#f272c8'
@@ -31,14 +30,13 @@ const Stars = (props) => {
 
 const StarsCanvas = () => {
   return (
-    <div className='w-full h-screen fixed inset-0 bg-black' style={{zIndex: -1000, isolation: 'isolate', contain: 'layout style paint'}}>
-      <Canvas
-        camera={{ position: [0, 0, 1] }}
-        style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
-      >
+    <div className='w-full h-auto absolute inset-0 z-[-1]'>
+      <Canvas camera={{ position: [0, 0, 1] }}>
         <Suspense fallback={null}>
           <Stars />
         </Suspense>
+
+        <Preload all />
       </Canvas>
     </div>
   );

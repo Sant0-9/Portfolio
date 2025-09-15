@@ -1,14 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { MOTION_DISABLED } from './hooks/useReducedMotion';
+import { MOTION_DISABLED } from './motion';
 
 interface AnimatedDividerProps {
   className?: string;
 }
 
 export default function AnimatedDivider({ className = '' }: AnimatedDividerProps) {
-  const pathVariant = MOTION_DISABLED 
+  const pathVariant = MOTION_DISABLED
     ? { pathLength: 1, opacity: 1 }
     : {
         pathLength: [0, 1],
@@ -16,7 +16,7 @@ export default function AnimatedDivider({ className = '' }: AnimatedDividerProps
         transition: {
           pathLength: {
             duration: 1.5,
-            ease: 'easeInOut',
+            ease: [0.645, 0.045, 0.355, 1] as const,
             delay: 0.3
           },
           opacity: {

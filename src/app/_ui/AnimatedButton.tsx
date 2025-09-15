@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
-import { MOTION_DISABLED } from './hooks/useReducedMotion';
+import { MOTION_DISABLED } from './motion';
 
 interface AnimatedButtonProps {
   children: ReactNode;
@@ -29,7 +29,7 @@ export default function AnimatedButton({
   
   const variantClasses = {
     primary: 'bg-teal-500 hover:bg-teal-600 text-white focus:ring-teal-400/50',
-    secondary: 'bg-white/10 hover:bg-white/20 text-white border border-white/20 hover:border-white/40 focus:ring-white/50',
+    secondary: 'bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-white/20 focus:ring-white/50 backdrop-blur-xl overflow-hidden',
     ghost: 'text-teal-400 hover:text-teal-300 focus:ring-teal-400/50'
   };
 
@@ -37,7 +37,7 @@ export default function AnimatedButton({
     scale: 1.02,
     transition: {
       duration: 0.2,
-      ease: 'easeOut'
+      ease: [0.25, 0.1, 0.25, 1] as const
     }
   };
 
@@ -45,13 +45,13 @@ export default function AnimatedButton({
     scale: 0.98
   };
 
-  const underlineVariants = MOTION_DISABLED 
+  const underlineVariants = MOTION_DISABLED
     ? { backgroundSize: '100% 2px' }
     : {
         backgroundSize: ['0% 2px', '100% 2px'],
         transition: {
           duration: 0.25,
-          ease: 'easeOut'
+          ease: [0.25, 0.1, 0.25, 1] as const
         }
       };
 
@@ -79,7 +79,45 @@ export default function AnimatedButton({
       whileInView={variant === 'ghost' && !MOTION_DISABLED ? underlineVariants : {}}
       viewport={{ once: false }}
     >
-      {children}
+      {variant === 'secondary' && (
+        <>
+          {/* Liquid glass effects */}
+          <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-teal-400/2 to-purple-500/2 opacity-80" />
+          <div className="absolute inset-0 rounded-lg bg-gradient-to-b from-white/2 to-transparent" />
+
+          {/* Flowing liquid effect */}
+          <motion.div
+            className="absolute inset-0 rounded-lg opacity-30"
+            animate={{
+              background: [
+                'radial-gradient(circle at 30% 50%, rgba(20, 184, 166, 0.06) 0%, transparent 60%)',
+                'radial-gradient(circle at 70% 50%, rgba(139, 92, 246, 0.06) 0%, transparent 60%)',
+                'radial-gradient(circle at 30% 50%, rgba(20, 184, 166, 0.06) 0%, transparent 60%)'
+              ]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+
+          {/* Glass refraction line */}
+          <motion.div
+            className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"
+            animate={{
+              x: ['-100%', '100%']
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.5
+            }}
+          />
+        </>
+      )}
+      <span className={variant === 'secondary' ? 'relative z-10' : ''}>{children}</span>
     </Component>
   );
 }

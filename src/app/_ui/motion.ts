@@ -1,7 +1,8 @@
-import { MOTION_DISABLED } from './hooks/useReducedMotion';
+// Import reduced motion detection
+const ANIMATIONS_ENABLED = process.env.NEXT_PUBLIC_ANIMATIONS_ENABLED !== 'false';
+const DEBUG_MOTION_OFF = process.env.NEXT_PUBLIC_DEBUG_MOTION === 'off';
 
-// Re-export MOTION_DISABLED for convenience
-export { MOTION_DISABLED };
+export const MOTION_DISABLED = DEBUG_MOTION_OFF || !ANIMATIONS_ENABLED || (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
 
 // Animation duration tokens
 export const dur = {
