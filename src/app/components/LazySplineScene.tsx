@@ -35,6 +35,7 @@ interface LazySplineSceneProps {
   quality?: 'low' | 'medium' | 'high' | 'ultra';
   enableInteraction?: boolean;
   onSceneInteraction?: (event?: any) => void;
+  fallbackScene?: string;
 }
 
 export default function LazySplineScene(props: LazySplineSceneProps) {

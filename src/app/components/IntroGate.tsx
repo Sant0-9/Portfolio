@@ -2,6 +2,23 @@
 
 import { motion, useAnimationControls, AnimatePresence } from 'framer-motion';
 import { useEffect, useState, useCallback, useRef } from 'react';
+
+// Mobile detection hook
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  return isMobile;
+};
 import LazySplineScene from './LazySplineScene';
 import StarfieldLayer from '../_ui/Background/StarfieldLayer';
 import { MOTION_DISABLED } from '../_ui/motion';
@@ -53,6 +70,7 @@ export default function IntroGate({
   const timers = useRef<{ hint?: number; fallback?: number; hard?: number }>({});
 
   const overlayControls = useAnimationControls();
+  const isMobile = useIsMobile();
 
   // Check session storage on mount to respect "remember" functionality
   useEffect(() => {
@@ -113,12 +131,12 @@ export default function IntroGate({
     if (timers.current.hard) clearTimeout(timers.current.hard);
 
     if (!showNavigation && isVisible && !hasAutoTransitioned.current) {
-      // Show hint quickly to guide the user
+      // Show hint quickly to guide the user - faster on mobile
       timers.current.hint = window.setTimeout(() => {
         setShowFallbackHint(true);
-      }, 1200);
+      }, isMobile ? 800 : 1200);
 
-      // Auto-transition sooner to avoid being "stuck" after hard reloads
+      // Auto-transition faster on mobile where 3D interactions are unreliable
       timers.current.fallback = window.setTimeout(() => {
         if (!hasAutoTransitioned.current) {
           console.log('Fallback: Auto-transitioning to geometrical state');
@@ -126,9 +144,9 @@ export default function IntroGate({
           setShowNavigation(true);
           setShowFallbackHint(false);
         }
-      }, 2200);
+      }, isMobile ? 1500 : 2200);
 
-      // Hard fail-safe: force transition even if timers were cleared by remounts/StrictMode
+      // Hard fail-safe: force transition faster on mobile
       timers.current.hard = window.setTimeout(() => {
         if (!hasAutoTransitioned.current && !showNavigation) {
           console.log('Hard fallback: forcing transition to geometrical state');
@@ -136,7 +154,7 @@ export default function IntroGate({
           setShowNavigation(true);
           setShowFallbackHint(false);
         }
-      }, 3500);
+      }, isMobile ? 2000 : 3500);
     }
 
     return () => {
@@ -144,7 +162,7 @@ export default function IntroGate({
       if (timers.current.fallback) clearTimeout(timers.current.fallback);
       if (timers.current.hard) clearTimeout(timers.current.hard);
     };
-  }, [showNavigation, isVisible]);
+  }, [showNavigation, isVisible, isMobile]);
 
   // Keyboard shortcut fallback
   useEffect(() => {
@@ -211,6 +229,7 @@ export default function IntroGate({
 
     let scrollThreshold = 0;
     const requiredScrollDistance = 100; // Require 100px of scroll before transitioning
+    let touchStartY: number | null = null;
 
     const handleWheel = (e: WheelEvent) => {
       if (e.deltaY > 0) { // Scrolling down
@@ -233,12 +252,38 @@ export default function IntroGate({
       }
     };
 
+    // Mobile touch support: detect swipe down gesture
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0]?.clientY ?? null;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (touchStartY == null) return;
+      const currentY = e.touches[0]?.clientY ?? touchStartY;
+      const delta = touchStartY - currentY; // positive when swiping up, negative when swiping down
+      // We want a downward motion to enter portfolio, so invert sign here
+      const downDistance = -delta;
+      if (downDistance > requiredScrollDistance) {
+        console.log('Touch swipe down detected, transitioning to main page');
+        handleFinalTransition();
+        touchStartY = null;
+      }
+    };
+    const onTouchEnd = () => {
+      touchStartY = null;
+    };
+
     window.addEventListener('wheel', handleWheel, { passive: true });
     window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
 
     return () => {
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('touchstart', onTouchStart as EventListener);
+      window.removeEventListener('touchmove', onTouchMove as EventListener);
+      window.removeEventListener('touchend', onTouchEnd as EventListener);
     };
   }, [showNavigation, isVisible, handleFinalTransition]);
 
@@ -296,22 +341,23 @@ export default function IntroGate({
           <LazySplineScene
             scene="/transition-scene.splinecode"
             className="w-full h-full mix-blend-screen opacity-90"
-            scale={1.0}
+            scale={isMobile ? 0.8 : 1.0}
             position={{ x: 0, y: 0, z: 0 }}
-            quality="ultra"
+            quality={isMobile ? "low" : "ultra"}
             enableInteraction={true}
             onSceneInteraction={handleSplineInteraction}
+            fallbackScene="/intro-scene.splinecode"
           />
         </div>
 
         {/* Navigation - only show when in geometrical state */}
         {showNavigation && <GeometricalNavigation />}
 
-        {/* Scroll hint - only show when in geometrical state */}
+        {/* Scroll/touch hint - only show when in geometrical state */}
         {showNavigation && (
           <div className="absolute bottom-8 left-0 right-0 z-30 flex justify-center animate-bounce">
             <div className="flex flex-col items-center text-white/70">
-              <span className="text-sm font-medium mb-2">Scroll down to enter portfolio</span>
+              <span className="text-sm font-medium mb-2">Scroll or swipe down to enter</span>
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -320,6 +366,13 @@ export default function IntroGate({
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
+              {/* Mobile explicit CTA for safety */}
+              <button
+                onClick={handleFinalTransition}
+                className="mt-4 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white text-xs transition-all duration-200"
+              >
+                Enter Portfolio
+              </button>
             </div>
           </div>
         )}

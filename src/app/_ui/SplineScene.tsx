@@ -16,6 +16,7 @@ interface SplineSceneProps {
   quality?: 'low' | 'medium' | 'high' | 'ultra';
   enableInteraction?: boolean;
   onSceneInteraction?: () => void;
+  fallbackScene?: string; // local fallback scene path
 }
 
 export default function SplineScene({
@@ -27,10 +28,24 @@ export default function SplineScene({
   enableScrollEffects = false,
   quality = 'high',
   enableInteraction = false,
-  onSceneInteraction
+  onSceneInteraction,
+  fallbackScene
 }: SplineSceneProps) {
+  // Detect mobile for performance optimization
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [currentScene, setCurrentScene] = useState(scene);
+  const [triedFallback, setTriedFallback] = useState(false);
   const [splineApp, setSplineApp] = useState<any>(null);
 
   const { registerLoader, markLoaderComplete } = useLoading();
@@ -54,7 +69,18 @@ export default function SplineScene({
     markLoaderComplete(loaderId);
 
     if (enableInteraction && spline) {
-      // Add mouse event listeners for hover effects
+      // Skip complex interactions on mobile for better performance
+      if (isMobile) {
+        // Simple mobile interaction - just trigger scene interaction on any click
+        spline.addEventListener('mouseDown', (e: any) => {
+          if (onSceneInteraction) {
+            onSceneInteraction();
+          }
+        });
+        return;
+      }
+
+      // Add mouse event listeners for hover effects (desktop only)
       spline.addEventListener('mouseHover', (e: any) => {
         console.log('Mouse hover:', e);
         if (e.target) {
@@ -165,6 +191,14 @@ export default function SplineScene({
 
   const handleError = (error: any) => {
     console.error('Spline scene failed to load:', error);
+    if (fallbackScene && !triedFallback) {
+      console.warn('Retrying with fallback scene:', fallbackScene);
+      setTriedFallback(true);
+      setHasError(false);
+      setIsLoading(true);
+      setCurrentScene(fallbackScene);
+      return;
+    }
     setHasError(true);
     setIsLoading(false);
     // Ensure global loading state can progress even if Spline fails
@@ -175,7 +209,13 @@ export default function SplineScene({
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (isLoading) {
-        try { markLoaderComplete(loaderId); } catch {}
+        if (fallbackScene && !triedFallback) {
+          console.warn('Timeout loading scene, switching to fallback scene');
+          setTriedFallback(true);
+          setCurrentScene(fallbackScene);
+        } else {
+          try { markLoaderComplete(loaderId); } catch {}
+        }
       }
     }, 5000);
     return () => clearTimeout(timeout);
@@ -238,10 +278,10 @@ export default function SplineScene({
 
         <Suspense fallback={fallback || <LoadingFallback />}>
           <Spline
-            scene={scene}
+            scene={currentScene}
             onLoad={handleLoad}
             onError={handleError}
-            renderOnDemand={quality === 'low'}
+            renderOnDemand={quality === 'low' || isMobile}
             style={{
               width: '100%',
               height: '100%',
@@ -264,10 +304,10 @@ export default function SplineScene({
 
       <Suspense fallback={fallback || <LoadingFallback />}>
         <Spline
-          scene={scene}
+          scene={currentScene}
           onLoad={handleLoad}
           onError={handleError}
-          renderOnDemand={quality === 'low'}
+          renderOnDemand={quality === 'low' || isMobile}
           style={{
             width: '100%',
             height: '100%',
