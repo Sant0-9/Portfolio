@@ -1,13 +1,14 @@
 import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
-import Background from './_ui/Background'
+import { LoadingProvider } from './context/LoadingContext'
+import ClientLayout from './components/ClientLayout'
 import './globals.css'
 
 export const metadata: Metadata = {
   title: "OneKnight - Shifat Islam Santo",
   description: 'CS student at UT Dallas and full-stack developer with expertise in modern web applications and AI technologies.',
-  metadataBase: new URL('https://portfolio.example.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
   icons: {
     icon: '/icon.svg',
     apple: '/apple-touch-icon.png',
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
   },
 }
 
+
 export default function RootLayout({
   children,
 }: {
@@ -31,18 +33,11 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
       </head>
       <body className={`${GeistSans.variable} ${GeistMono.variable} font-sans overflow-x-hidden text-zinc-200 antialiased`}>
-        {/* Three.js Stars Background */}
-        <Background />
-
-        <div style={{position: 'relative', zIndex: 1000}}>
-          <a href="#main" className="skip-link">
-            Skip to main content
-          </a>
-
-          <main id="main" style={{position: 'relative', zIndex: 1000}}>
+        <LoadingProvider minDurationMs={1200} maxDurationMs={8000}>
+          <ClientLayout>
             {children}
-          </main>
-        </div>
+          </ClientLayout>
+        </LoadingProvider>
       </body>
     </html>
   )

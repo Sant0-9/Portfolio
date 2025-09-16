@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import SplineScene from '../SplineScene';
 
 const techStack = [
   {
@@ -146,10 +147,21 @@ export default function SectionAbout() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+            <h2
+              className="text-4xl lg:text-5xl font-bold text-white mb-4"
+              style={{
+                fontFamily: 'Orbitron, monospace',
+                textShadow: '0 0 20px rgba(0,240,255,0.6), 0 0 40px rgba(0,240,255,0.4)'
+              }}
+            >
               About Me
             </h2>
-            <div className="w-24 h-0.5 bg-gradient-to-r from-teal-400 to-purple-500 mx-auto" />
+            <motion.div
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="w-24 h-0.5 bg-gradient-to-r from-teal-400 to-purple-500 mx-auto"
+            />
           </motion.div>
 
           <div className="max-w-6xl mx-auto">
@@ -194,13 +206,54 @@ export default function SectionAbout() {
               </div>
 
               <div className="lg:justify-self-end">
-                <div className="relative">
-                  <div className="w-80 h-80 rounded-2xl bg-gradient-to-br from-teal-400/20 via-purple-500/20 to-blue-500/20 flex items-center justify-center border border-white/10">
-                    <div className="text-white/60 text-6xl font-bold">SR</div>
+                <motion.div
+                  className="relative"
+                  initial={{ opacity: 0, scale: 0.8, rotateY: 15 }}
+                  whileInView={{ opacity: 1, scale: 1, rotateY: 0 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  whileHover={{
+                    rotateY: 5,
+                    rotateX: -2,
+                    scale: 1.02,
+                    transition: { duration: 0.4 }
+                  }}
+                >
+                  {/* 3D Robot Container */}
+                  <div className="w-80 h-80 rounded-2xl overflow-hidden relative">
+                    {/* Robot Scene */}
+                    <SplineScene
+                      scene="/scene.splinecode"
+                      className="w-full h-full"
+                      scale={0.8}
+                      position={{ x: 0, y: -10, z: 0 }}
+                    />
+
+                    {/* Interactive glow overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
+
+                    {/* Decorative elements */}
+                    <div className="absolute top-4 right-4 w-3 h-3 bg-teal-400 rounded-full opacity-60 animate-pulse" />
+                    <div className="absolute bottom-4 left-4 w-2 h-2 bg-purple-400 rounded-full opacity-80 animate-pulse delay-1000" />
                   </div>
-                  <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-teal-400 to-purple-500 rounded-full blur-xl opacity-60" />
-                  <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full blur-xl opacity-40" />
-                </div>
+
+                  {/* Enhanced floating elements */}
+                  <div className="absolute -top-6 -right-6 w-32 h-32 bg-gradient-to-br from-teal-400/30 to-purple-500/30 rounded-full blur-2xl opacity-60 animate-pulse" />
+                  <div className="absolute -bottom-6 -left-6 w-40 h-40 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-full blur-2xl opacity-40" />
+
+                  {/* Tech orbit rings */}
+                  <motion.div
+                    className="absolute inset-0 border border-teal-400/20 rounded-full opacity-0 hover:opacity-100"
+                    style={{ transform: 'scale(1.1)' }}
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  />
+                  <motion.div
+                    className="absolute inset-0 border border-purple-400/15 rounded-full opacity-0 hover:opacity-100"
+                    style={{ transform: 'scale(1.2)' }}
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                  />
+                </motion.div>
               </div>
             </motion.div>
           </div>
@@ -216,10 +269,21 @@ export default function SectionAbout() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+            <h2
+              className="text-4xl lg:text-5xl font-bold text-white mb-4"
+              style={{
+                fontFamily: 'Orbitron, monospace',
+                textShadow: '0 0 20px rgba(0,240,255,0.6), 0 0 40px rgba(0,240,255,0.4)'
+              }}
+            >
               Skills & Technologies
             </h2>
-            <div className="w-24 h-0.5 bg-gradient-to-r from-teal-400 to-purple-500 mx-auto" />
+            <motion.div
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="w-24 h-0.5 bg-gradient-to-r from-teal-400 to-purple-500 mx-auto"
+            />
           </motion.div>
 
           <div className="max-w-6xl mx-auto">
@@ -305,10 +369,21 @@ export default function SectionAbout() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+            <h2
+              className="text-4xl lg:text-5xl font-bold text-white mb-4"
+              style={{
+                fontFamily: 'Orbitron, monospace',
+                textShadow: '0 0 20px rgba(0,240,255,0.6), 0 0 40px rgba(0,240,255,0.4)'
+              }}
+            >
               Experience
             </h2>
-            <div className="w-24 h-0.5 bg-gradient-to-r from-teal-400 to-purple-500 mx-auto" />
+            <motion.div
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="w-24 h-0.5 bg-gradient-to-r from-teal-400 to-purple-500 mx-auto"
+            />
           </motion.div>
 
           <div className="max-w-4xl mx-auto">

@@ -3,11 +3,11 @@ import HeroTitle from './_ui/HeroTitle'
 import Section from './_ui/Section'
 import SectionAbout from './_ui/about/SectionAbout'
 import SectionProjects from './_ui/projects/SectionProjects'
-import SplineScene from './_ui/SplineScene'
 
 export default function Home() {
   return (
-    <div>
+    <>
+      <div className="min-h-screen">
       {/* Hero Section */}
       <Section
         id="Hero"
@@ -15,37 +15,38 @@ export default function Home() {
         padding="xl"
         maxWidth="full"
       >
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center min-h-screen">
-            {/* Left Side - Title */}
-            <div className="relative z-50">
-              <HeroTitle
-                eyebrow="Full-Stack Developer & AI Enthusiast"
-                title="OneKnight"
-                typewriterLines={[
-                  "Hi",
-                  "Welcome to my universe",
-                  "dive in",
-                  "projects, ideas, and a little chaos"
-                ]}
-              />
-            </div>
 
-            {/* Right Side - Spline 3D Model */}
-            <div className="relative z-40 h-full min-h-[400px] lg:min-h-[500px] flex items-center justify-center">
-              <div
-                id="spline-container"
-                className="w-4/5 h-4/5 max-w-[400px] max-h-[400px] overflow-hidden"
-              >
-                {/* Your local Spline scene */}
-                <SplineScene
-                  scene="/scene.splinecode"
-                  className="w-full h-full"
-                  scale={0.75}
-                  position={{ x: 0, y: 20, z: 0 }}
-                />
-              </div>
+        {/* Content Overlay */}
+        <div className="absolute top-0 right-0 p-8 z-20">
+          {/* Hero Title - positioned in top right corner */}
+          <div className="text-right">
+            <div className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">
+              Full-Stack Developer & AI Enthusiast
             </div>
+            <h1
+              className="text-2xl lg:text-3xl font-bold text-white"
+              style={{
+                fontFamily: 'Orbitron, monospace',
+                textShadow: '0 0 10px rgba(0,240,255,0.6), 0 0 20px rgba(0,240,255,0.4)'
+              }}
+            >
+              OneKnight
+            </h1>
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 animate-bounce">
+          <div className="flex flex-col items-center text-white/70">
+            <span className="text-sm font-medium mb-2">Scroll to explore</span>
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
           </div>
         </div>
       </Section>
@@ -60,7 +61,13 @@ export default function Home() {
       <section id="contact" className="py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+            <h2
+              className="text-4xl lg:text-5xl font-bold text-white mb-4"
+              style={{
+                fontFamily: 'Orbitron, monospace',
+                textShadow: '0 0 20px rgba(0,240,255,0.6), 0 0 40px rgba(0,240,255,0.4)'
+              }}
+            >
               Let&apos;s Connect
             </h2>
             <div className="w-24 h-0.5 bg-gradient-to-r from-teal-400 to-purple-500 mx-auto" />
@@ -127,5 +134,6 @@ export default function Home() {
       </section>
 
     </div>
+    </>
   )
 }

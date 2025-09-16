@@ -111,11 +111,21 @@ export default function AboutReveal({ isOpen, onClose }: AboutRevealProps) {
                 >
                   <motion.h2 
                     id="about-title"
-                    className="text-3xl md:text-5xl font-extrabold text-white mb-8 text-center"
+                    className="text-3xl md:text-5xl font-extrabold text-white mb-4 text-center"
+                    style={{
+                      fontFamily: 'Orbitron, monospace',
+                      textShadow: '0 0 20px rgba(0,240,255,0.6), 0 0 40px rgba(0,240,255,0.4)'
+                    }}
                     variants={fadeUp}
                   >
                     About Me
                   </motion.h2>
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 0.6, delay: 0.1 }}
+                    className="w-24 h-0.5 bg-gradient-to-r from-teal-400 to-purple-500 mx-auto mb-6"
+                  />
                   
                   <motion.div 
                     className="space-y-6 mb-12 text-center max-w-3xl mx-auto"

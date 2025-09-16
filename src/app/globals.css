@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --font-orbitron: 'Orbitron', monospace;
+  --font-exo2: 'Exo 2', sans-serif;
+}
+
 @layer base {
   html,
   body {

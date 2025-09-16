@@ -3,7 +3,8 @@
 
 import { Suspense, useState, useEffect } from 'react';
 import Spline from '@splinetool/react-spline';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useLoading } from '../context/LoadingContext';
 
 interface SplineSceneProps {
   scene: string;
@@ -11,6 +12,10 @@ interface SplineSceneProps {
   fallback?: React.ReactNode;
   scale?: number;
   position?: { x?: number; y?: number; z?: number };
+  enableScrollEffects?: boolean;
+  quality?: 'low' | 'medium' | 'high' | 'ultra';
+  enableInteraction?: boolean;
+  onSceneInteraction?: () => void;
 }
 
 export default function SplineScene({
@@ -18,20 +23,163 @@ export default function SplineScene({
   className = "",
   fallback,
   scale = 1,
-  position = { x: 0, y: 0, z: 0 }
+  position = { x: 0, y: 0, z: 0 },
+  enableScrollEffects = false,
+  quality = 'high',
+  enableInteraction = false,
+  onSceneInteraction
 }: SplineSceneProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [splineApp, setSplineApp] = useState<any>(null);
 
-  const handleLoad = () => {
+  const { registerLoader, markLoaderComplete } = useLoading();
+  const loaderId = `spline-${scene}`;
+
+  // Scroll-based effects
+  const { scrollYProgress } = useScroll();
+  const opacity = useTransform(scrollYProgress, [0, 0.3, 1], [1, 0.7, 0.2]);
+  const scaleTransform = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.1, 1.2]);
+  const yTransform = useTransform(scrollYProgress, [0, 1], [0, -100]);
+
+  // Register this loader on mount
+  useEffect(() => {
+    registerLoader(loaderId);
+  }, [registerLoader, loaderId]);
+
+  const handleLoad = (spline: any) => {
+    console.log('Spline scene loaded successfully');
     setIsLoading(false);
+    setSplineApp(spline);
+    markLoaderComplete(loaderId);
+
+    if (enableInteraction && spline) {
+      // Add mouse event listeners for hover effects
+      spline.addEventListener('mouseHover', (e: any) => {
+        console.log('Mouse hover:', e);
+        if (e.target) {
+          // Add multiple lighting effects
+          if (e.target.emissiveIntensity !== undefined) {
+            e.target.emissiveIntensity = 0.3;
+          }
+          if (e.target.material) {
+            e.target.material.emissiveIntensity = 0.3;
+          }
+          // Add brightness/exposure increase
+          if (e.target.brightness !== undefined) {
+            e.target.brightness = 1.5;
+          }
+        }
+      });
+
+      spline.addEventListener('mouseDown', (e: any) => {
+        console.log('Mouse down:', e);
+        console.log('Target name:', e.target?.name);
+        console.log('Target object:', e.target);
+
+        if (e.target) {
+          // Increase glow on click
+          e.target.emissiveIntensity = 0.6;
+
+          // Check if clicked object is a button or interactive element
+          // Made more robust to handle various object names
+          const targetName = e.target.name?.toLowerCase() || '';
+          const isInteractiveObject = targetName.includes('return') ||
+                                    targetName.includes('button') ||
+                                    targetName.includes('click') ||
+                                    targetName.includes('interact') ||
+                                    targetName.includes('sphere') ||
+                                    targetName.includes('cube') ||
+                                    targetName.includes('mesh') ||
+                                    e.target.type === 'Mesh' ||
+                                    e.target.isMesh === true;
+
+          if (isInteractiveObject) {
+            console.log('Interactive object clicked:', targetName || e.target.type);
+            if (onSceneInteraction) {
+              onSceneInteraction();
+            }
+          } else {
+            // Fallback: any click on the scene after 2 seconds should trigger interaction
+            console.log('Non-interactive object clicked, checking fallback timer');
+            setTimeout(() => {
+              if (onSceneInteraction) {
+                console.log('Fallback: triggering scene interaction after timeout');
+                onSceneInteraction();
+              }
+            }, 2000);
+          }
+        }
+      });
+
+      spline.addEventListener('mouseUp', (e: any) => {
+        console.log('Mouse up:', e);
+        if (e.target) {
+          // Reset glow
+          e.target.emissiveIntensity = 0.2;
+        }
+      });
+
+      spline.addEventListener('mouseHoverOut', (e: any) => {
+        console.log('Mouse hover out:', e);
+        if (e.target) {
+          // Remove glow when not hovering
+          if (e.target.emissiveIntensity !== undefined) {
+            e.target.emissiveIntensity = 0;
+          }
+          if (e.target.material) {
+            e.target.material.emissiveIntensity = 0;
+          }
+          // Reset brightness
+          if (e.target.brightness !== undefined) {
+            e.target.brightness = 1.0;
+          }
+        }
+      });
+
+      // Add global mouse move handler for scene-wide lighting effects
+      const canvas = spline.canvas;
+      if (canvas) {
+        canvas.addEventListener('mousemove', (e: MouseEvent) => {
+          const rect = canvas.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width * 2 - 1;
+          const y = -(e.clientY - rect.top) / rect.height * 2 + 1;
+
+          // Adjust scene lighting based on mouse position
+          const scene = spline.scene;
+          if (scene && scene.children) {
+            scene.children.forEach((child: any) => {
+              if (child.type === 'DirectionalLight' || child.type === 'PointLight') {
+                // Subtle light movement following cursor
+                if (child.position) {
+                  child.position.x = x * 2;
+                  child.position.y = y * 2;
+                }
+              }
+            });
+          }
+        });
+      }
+    }
   };
 
   const handleError = (error: any) => {
     console.error('Spline scene failed to load:', error);
     setHasError(true);
     setIsLoading(false);
+    // Ensure global loading state can progress even if Spline fails
+    try { markLoaderComplete(loaderId); } catch {}
   };
+
+  // Safety: if the scene takes too long, mark as complete to avoid blocking the fake loader
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (isLoading) {
+        try { markLoaderComplete(loaderId); } catch {}
+      }
+    }, 5000);
+    return () => clearTimeout(timeout);
+  }, [isLoading, loaderId, markLoaderComplete]);
 
   const LoadingFallback = () => (
     <div className="w-full h-full flex items-center justify-center">
@@ -75,6 +223,41 @@ export default function SplineScene({
     return fallback || <ErrorFallback />;
   }
 
+  if (enableScrollEffects) {
+    return (
+      <motion.div
+        className={`relative w-full h-full ${className}`}
+        style={{
+          background: 'transparent',
+          opacity,
+          scale: scaleTransform,
+          y: yTransform
+        }}
+      >
+        {isLoading && (fallback || <LoadingFallback />)}
+
+        <Suspense fallback={fallback || <LoadingFallback />}>
+          <Spline
+            scene={scene}
+            onLoad={handleLoad}
+            onError={handleError}
+            renderOnDemand={quality === 'low'}
+            style={{
+              width: '100%',
+              height: '100%',
+              opacity: isLoading ? 0 : 1,
+              transition: 'opacity 0.5s ease-in-out',
+              transform: `scale(${scale}) translate3d(${position.x}px, ${position.y}px, ${position.z}px)`,
+              transformOrigin: 'center center',
+              background: 'transparent',
+              pointerEvents: enableInteraction ? 'auto' : 'none'
+            }}
+          />
+        </Suspense>
+      </motion.div>
+    );
+  }
+
   return (
     <div className={`relative w-full h-full ${className}`} style={{ background: 'transparent' }}>
       {isLoading && (fallback || <LoadingFallback />)}
@@ -84,6 +267,7 @@ export default function SplineScene({
           scene={scene}
           onLoad={handleLoad}
           onError={handleError}
+          renderOnDemand={quality === 'low'}
           style={{
             width: '100%',
             height: '100%',
@@ -91,7 +275,8 @@ export default function SplineScene({
             transition: 'opacity 0.5s ease-in-out',
             transform: `scale(${scale}) translate3d(${position.x}px, ${position.y}px, ${position.z}px)`,
             transformOrigin: 'center center',
-            background: 'transparent'
+            background: 'transparent',
+            pointerEvents: enableInteraction ? 'auto' : 'none'
           }}
         />
       </Suspense>

@@ -1,7 +1,13 @@
 'use client';
 
-import StarfieldLayer from './StarfieldLayer';
+import { forwardRef } from 'react';
+import StarfieldLayer, { StarfieldHandle } from './StarfieldLayer';
 
-export default function Background() {
-  return <StarfieldLayer />;
-}
+const Background = forwardRef<StarfieldHandle>((props, ref) => {
+  return <StarfieldLayer ref={ref} />;
+});
+
+Background.displayName = 'Background';
+
+export default Background;
+export type { StarfieldHandle };
