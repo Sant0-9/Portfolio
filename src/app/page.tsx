@@ -1,54 +1,166 @@
 // 3D ready
-import HeroTitle from './_ui/HeroTitle'
+'use client';
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import Header from './components/Header'
 import Section from './_ui/Section'
 import SectionAbout from './_ui/about/SectionAbout'
 import SectionProjects from './_ui/projects/SectionProjects'
+import ContactForm from './components/ContactForm'
 
 export default function Home() {
+  const [isContactFormOpen, setIsContactFormOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <>
+      {/* Header Navigation */}
+      <Header />
+
       <div className="min-h-screen">
       {/* Hero Section */}
       <Section
         id="Hero"
-        className="min-h-screen flex items-center relative z-50"
+        className="min-h-screen flex items-center relative z-10 overflow-hidden pt-20"
         padding="xl"
         maxWidth="full"
       >
+        {/* Central Hero Content */}
+        <div className="w-full h-full flex items-center justify-center relative">
+          <div className="text-center space-y-8 max-w-4xl mx-auto px-4">
+            {/* Main Hero Title - Static first to avoid hydration issues */}
+            <div className="space-y-4">
+              <h1
+                className="text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-bold text-white"
+                style={{
+                  fontFamily: 'Orbitron, monospace',
+                  textShadow: '0 0 20px rgba(0,240,255,0.6), 0 0 40px rgba(0,240,255,0.4)'
+                }}
+              >
+                OneKnight
+              </h1>
 
-        {/* Content Overlay */}
-        <div className="absolute top-0 right-0 p-8 z-20">
-          {/* Hero Title - positioned in top right corner */}
-          <div className="text-right">
-            <div className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">
-              Full-Stack Developer & AI Enthusiast
+              <div className="text-sm sm:text-lg lg:text-xl text-zinc-400 uppercase tracking-wider">
+                Full-Stack Developer & AI Enthusiast
+              </div>
             </div>
-            <h1
-              className="text-2xl lg:text-3xl font-bold text-white"
-              style={{
-                fontFamily: 'Orbitron, monospace',
-                textShadow: '0 0 10px rgba(0,240,255,0.6), 0 0 20px rgba(0,240,255,0.4)'
-              }}
-            >
-              OneKnight
-            </h1>
+
+            {/* Animated description */}
+            {isMounted && (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1, duration: 0.8 }}
+                className="space-y-6"
+              >
+                <p className="text-lg sm:text-xl lg:text-2xl text-white/80 leading-relaxed max-w-3xl mx-auto px-4">
+                  Crafting innovative web applications with cutting-edge technology
+                </p>
+
+                {/* Tech stack badges */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 1.4, duration: 0.6 }}
+                  className="flex flex-wrap justify-center gap-3 mt-8"
+                >
+                  {['React', 'Next.js', 'TypeScript', 'Node.js', 'AI/ML', 'Cloud'].map((tech, index) => (
+                    <motion.span
+                      key={tech}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 1.6 + index * 0.1, duration: 0.5 }}
+                      className="px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full text-sm font-medium text-white/90 hover:bg-white/10 transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      {tech}
+                    </motion.span>
+                  ))}
+                </motion.div>
+              </motion.div>
+            )}
+
+            {/* Call to action */}
+            {isMounted && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 2, duration: 0.8 }}
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-12"
+              >
+                <motion.a
+                  href="#projects"
+                  className="px-8 py-4 bg-gradient-to-r from-teal-500 to-purple-500 hover:from-teal-400 hover:to-purple-400 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  View My Work
+                </motion.a>
+                <motion.button
+                  onClick={() => setIsContactFormOpen(true)}
+                  className="px-8 py-4 border-2 border-white/20 hover:border-white/40 text-white font-semibold rounded-xl transition-all duration-300 backdrop-blur-sm hover:bg-white/5"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Get In Touch
+                </motion.button>
+              </motion.div>
+            )}
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 animate-bounce">
-          <div className="flex flex-col items-center text-white/70">
-            <span className="text-sm font-medium mb-2">Scroll to explore</span>
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
+        {/* Floating geometric elements - only on desktop for performance */}
+        {isMounted && !isMobile && (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {[...Array(3)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-2 h-2 bg-gradient-to-r from-teal-400/30 to-purple-400/30 rounded-full"
+                style={{
+                  left: `${25 + (i * 25)}%`,
+                  top: `${30 + Math.sin(i * 2) * 20}%`
+                }}
+                animate={{
+                  y: [-10, 10, -10],
+                  opacity: [0.4, 0.7, 0.4]
+                }}
+                transition={{
+                  duration: 3 + i * 0.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: i * 0.5
+                }}
+              />
+            ))}
           </div>
-        </div>
+        )}
+
+        {/* Corner accent - moved to bottom left */}
+        {isMounted && (
+          <div className="absolute bottom-8 left-8 text-left z-20">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 2.5, duration: 0.8 }}
+              className="text-white/60 text-sm"
+            >
+              CS Student at UT Dallas
+            </motion.div>
+          </div>
+        )}
+
       </Section>
 
       {/* About Section with Scroll-Triggered Sticky Bio */}
@@ -82,18 +194,18 @@ export default function Home() {
 
               {/* Contact Links */}
               <div className="flex flex-wrap justify-center gap-6">
-                <a
-                  href="mailto:santo.rahman@example.com"
+                <button
+                  onClick={() => setIsContactFormOpen(true)}
                   className="flex items-center gap-3 px-6 py-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 text-white group"
                 >
                   <svg className="w-5 h-5 text-teal-400 group-hover:text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                   <span>Contact Me</span>
-                </a>
+                </button>
 
                 <a
-                  href="https://github.com/santo-rahman"
+                  href="https://github.com/Sant0-9"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 px-6 py-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 text-white group"
@@ -105,7 +217,7 @@ export default function Home() {
                 </a>
 
                 <a
-                  href="https://linkedin.com/in/santo-rahman"
+                  href="https://www.linkedin.com/in/shifatislam-santo/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 px-6 py-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 text-white group"
@@ -117,15 +229,15 @@ export default function Home() {
                 </a>
 
                 <a
-                  href="https://twitter.com/santo_rahman"
+                  href="https://www.instagram.com/shifatis.santo/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 px-6 py-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 text-white group"
                 >
-                  <svg className="w-5 h-5 text-sky-400 group-hover:text-sky-300" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                  <svg className="w-5 h-5 text-pink-400 group-hover:text-pink-300" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                   </svg>
-                  <span>Twitter</span>
+                  <span>Instagram</span>
                 </a>
               </div>
             </div>
@@ -134,6 +246,12 @@ export default function Home() {
       </section>
 
     </div>
+
+    {/* Contact Form Modal */}
+    <ContactForm
+      isOpen={isContactFormOpen}
+      onClose={() => setIsContactFormOpen(false)}
+    />
     </>
   )
 }

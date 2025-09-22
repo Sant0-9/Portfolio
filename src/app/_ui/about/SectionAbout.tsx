@@ -223,6 +223,7 @@ export default function SectionAbout() {
                     {/* Robot Scene */}
                     <SplineScene
                       scene="/scene.splinecode"
+                      fallbackScene="/hero-scene.splinecode"
                       className="w-full h-full"
                       scale={0.8}
                       position={{ x: 0, y: -10, z: 0 }}

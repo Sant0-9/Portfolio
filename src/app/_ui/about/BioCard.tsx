@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { fadeInUp } from '../motion';
 import { MOTION_DISABLED } from '../motion';
+import Image from 'next/image';
 
 interface BioCardProps {
   name: string;
@@ -95,9 +96,11 @@ export default function BioCard({ name, role, location, bullets, avatar, topOffs
           {avatar && (
             <div className="flex justify-center">
               <div className="relative w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-teal-400 to-purple-500 p-0.5">
-                <img
+                <Image
                   src={avatar}
                   alt={`Professional headshot of ${name}, ${role}`}
+                  width={80}
+                  height={80}
                   className="w-full h-full rounded-full object-cover bg-gray-900"
                 />
               </div>

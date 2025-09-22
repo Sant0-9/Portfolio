@@ -30,6 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="overflow-x-hidden bg-black text-zinc-200 antialiased">
       <head>
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
       </head>
       <body className={`${GeistSans.variable} ${GeistMono.variable} font-sans overflow-x-hidden text-zinc-200 antialiased`}>

@@ -123,44 +123,31 @@ export default function IntroGate({
     }
   }, [showNavigation]);
 
-  // Fallback mechanism: if user has been waiting too long, provide alternative interaction
+  // Fallback mechanism: Since 3D model is disabled, transition immediately
   useEffect(() => {
+    const currentTimers = timers.current;
+
     // Clear any previous timers
-    if (timers.current.hint) clearTimeout(timers.current.hint);
-    if (timers.current.fallback) clearTimeout(timers.current.fallback);
-    if (timers.current.hard) clearTimeout(timers.current.hard);
+    if (currentTimers.hint) clearTimeout(currentTimers.hint);
+    if (currentTimers.fallback) clearTimeout(currentTimers.fallback);
+    if (currentTimers.hard) clearTimeout(currentTimers.hard);
 
     if (!showNavigation && isVisible && !hasAutoTransitioned.current) {
-      // Show hint quickly to guide the user - faster on mobile
-      timers.current.hint = window.setTimeout(() => {
-        setShowFallbackHint(true);
-      }, isMobile ? 800 : 1200);
-
-      // Auto-transition faster on mobile where 3D interactions are unreliable
+      // Since 3D model is disabled, transition immediately to geometrical state
       timers.current.fallback = window.setTimeout(() => {
         if (!hasAutoTransitioned.current) {
-          console.log('Fallback: Auto-transitioning to geometrical state');
+          console.log('3D model disabled: Auto-transitioning to geometrical state');
           hasAutoTransitioned.current = true;
           setShowNavigation(true);
           setShowFallbackHint(false);
         }
-      }, isMobile ? 1500 : 2200);
-
-      // Hard fail-safe: force transition faster on mobile
-      timers.current.hard = window.setTimeout(() => {
-        if (!hasAutoTransitioned.current && !showNavigation) {
-          console.log('Hard fallback: forcing transition to geometrical state');
-          hasAutoTransitioned.current = true;
-          setShowNavigation(true);
-          setShowFallbackHint(false);
-        }
-      }, isMobile ? 2000 : 3500);
+      }, 500); // Very short delay, just enough for the component to mount
     }
 
     return () => {
-      if (timers.current.hint) clearTimeout(timers.current.hint);
-      if (timers.current.fallback) clearTimeout(timers.current.fallback);
-      if (timers.current.hard) clearTimeout(timers.current.hard);
+      if (currentTimers.hint) clearTimeout(currentTimers.hint);
+      if (currentTimers.fallback) clearTimeout(currentTimers.fallback);
+      if (currentTimers.hard) clearTimeout(currentTimers.hard);
     };
   }, [showNavigation, isVisible, isMobile]);
 
@@ -327,7 +314,7 @@ export default function IntroGate({
         {/* Purple gradient overlay for blend */}
         <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-transparent via-transparent to-purple-900/40" />
 
-        {/* Single Spline Scene with both click me and geometrical states */}
+        {/* Single Spline Scene with both click me and geometrical states - TEMPORARILY DISABLED */}
         <div
           className="absolute inset-0 w-full h-full"
           onClick={() => {
@@ -338,6 +325,7 @@ export default function IntroGate({
           }}
           style={{ cursor: !showNavigation ? 'pointer' : 'default' }}
         >
+          {/* TEMPORARILY REMOVED 3D MODEL
           <LazySplineScene
             scene="/transition-scene.splinecode"
             className="w-full h-full mix-blend-screen opacity-90"
@@ -348,31 +336,152 @@ export default function IntroGate({
             onSceneInteraction={handleSplineInteraction}
             fallbackScene="/intro-scene.splinecode"
           />
+          */}
         </div>
 
         {/* Navigation - only show when in geometrical state */}
         {showNavigation && <GeometricalNavigation />}
 
+        {/* Central animated content for geometrical state - Simplified and Responsive */}
+        {showNavigation && (
+          <div className="absolute inset-0 flex items-center justify-center z-20 p-4">
+            <div className="text-center space-y-8 sm:space-y-12 max-w-4xl mx-auto w-full">
+              {/* Welcome text - Static first, then animated */}
+              <div className="space-y-4 sm:space-y-6">
+                <h1
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white"
+                  style={{
+                    fontFamily: 'Orbitron, monospace',
+                    textShadow: '0 0 20px rgba(0,240,255,0.6), 0 0 40px rgba(0,240,255,0.4)'
+                  }}
+                >
+                  Welcome
+                </h1>
+                <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed px-4">
+                  Enter a world of innovative full-stack development and AI-powered solutions
+                </p>
+                <div className="text-xs sm:text-sm lg:text-base text-teal-400/80 uppercase tracking-wider">
+                  Where Technology Meets Creativity
+                </div>
+              </div>
+
+              {/* Simplified geometric animation - Mobile responsive */}
+              <div className="relative w-full h-32 sm:h-40 md:h-48 flex items-center justify-center">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40"
+                >
+                  <div className="absolute inset-0 border-2 border-teal-400/50 rounded-full" />
+                  <div className="absolute inset-2 sm:inset-4 border border-purple-400/50 rounded-full" />
+                  <motion.div
+                    className="absolute inset-6 sm:inset-8 md:inset-12 bg-gradient-to-r from-teal-400/20 to-purple-400/20 rounded-full"
+                    animate={{
+                      scale: [1, 1.2, 1],
+                      opacity: [0.3, 0.6, 0.3]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  />
+                </motion.div>
+              </div>
+
+              {/* Tech highlights - Responsive grid */}
+              <div className="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 px-4">
+                {['React', 'TypeScript', 'AI/ML', 'Cloud'].map((tech) => (
+                  <div
+                    key={tech}
+                    className="px-3 py-2 sm:px-4 sm:py-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full text-xs sm:text-sm text-white/70 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+                  >
+                    {tech}
+                  </div>
+                ))}
+              </div>
+
+              {/* Minimal floating particles - Hidden on mobile for performance */}
+              <div className="absolute inset-0 pointer-events-none overflow-hidden hidden sm:block">
+                {[...Array(4)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1 h-1 bg-white/30 rounded-full"
+                    style={{
+                      left: `${25 + (i * 17)}%`,
+                      top: `${30 + Math.sin(i * 0.5) * 25}%`
+                    }}
+                    animate={{
+                      y: [-8, 8, -8],
+                      opacity: [0.3, 0.6, 0.3]
+                    }}
+                    transition={{
+                      duration: 3 + i * 0.5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: i * 0.2
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Scroll/touch hint - only show when in geometrical state */}
         {showNavigation && (
           <div className="absolute bottom-8 left-0 right-0 z-30 flex justify-center animate-bounce">
-            <div className="flex flex-col items-center text-white/70">
-              <span className="text-sm font-medium mb-2">Scroll or swipe down to enter</span>
+            <div className="flex flex-col items-center text-white/40">
+              <span className="text-xs font-light mb-2">Scroll or swipe down to enter</span>
               <svg
-                className="w-6 h-6"
+                className="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
-              {/* Mobile explicit CTA for safety */}
-              <button
-                onClick={handleFinalTransition}
-                className="mt-4 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white text-xs transition-all duration-200"
+            </div>
+          </div>
+        )}
+
+        {/* Initial loading content - show when not in navigation state */}
+        {!showNavigation && (
+          <div className="absolute inset-0 flex items-center justify-center z-20 p-4">
+            <div className="text-center space-y-6 max-w-2xl mx-auto w-full">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8 }}
+                className="space-y-4"
               >
-                Enter Portfolio
-              </button>
+                <h1
+                  className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white"
+                  style={{
+                    fontFamily: 'Orbitron, monospace',
+                    textShadow: '0 0 20px rgba(0,240,255,0.6), 0 0 40px rgba(0,240,255,0.4)'
+                  }}
+                >
+                  Loading Experience...
+                </h1>
+                <p className="text-sm sm:text-base text-white/70">
+                  Preparing your portfolio journey
+                </p>
+              </motion.div>
+
+              {/* Simple loading animation */}
+              <motion.div
+                className="relative w-16 h-16 sm:w-20 sm:h-20 mx-auto"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              >
+                <div className="absolute inset-0 border-2 border-teal-400/30 rounded-full" />
+                <div className="absolute inset-2 border border-purple-400/30 rounded-full" />
+                <motion.div
+                  className="absolute inset-4 bg-gradient-to-r from-teal-400/20 to-purple-400/20 rounded-full"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.3, 0.6, 0.3]
+                  }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                />
+              </motion.div>
             </div>
           </div>
         )}
@@ -385,17 +494,13 @@ export default function IntroGate({
               animate={{ opacity: 1, y: 0 }}
               className="text-center"
             >
-              <div className="text-white/80 text-sm mb-4">
-                <p className="mb-2">Click anywhere on the sphere or press Space to continue</p>
-                <p className="text-xs text-white/60">Auto-continuing in a moment...</p>
-              </div>
               <button
                 onClick={() => {
                   console.log('Manual transition to geometrical state via hint button');
                   setShowNavigation(true);
                   setShowFallbackHint(false);
                 }}
-                className="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white text-sm transition-all duration-200"
+                className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white text-sm transition-all duration-200"
               >
                 Continue to Portfolio
               </button>
@@ -403,8 +508,8 @@ export default function IntroGate({
           </div>
         )}
 
-        {/* Fallback debug button - only show in development */}
-        {!showNavigation && !showFallbackHint && process.env.NODE_ENV === 'development' && (
+        {/* Fallback debug button - only show in development when 3D model is present */}
+        {false && !showNavigation && !showFallbackHint && process.env.NODE_ENV === 'development' && (
           <div className="absolute bottom-8 left-0 right-0 z-30 flex justify-center">
             <button
               onClick={() => {

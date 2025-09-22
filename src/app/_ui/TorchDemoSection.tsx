@@ -36,19 +36,19 @@ export default function TorchDemoSection() {
           <div className="text-center space-y-8 px-8">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
               <div className="mb-4">
-                You've gotta dance like there's
+                You&apos;ve gotta dance like there&apos;s
               </div>
               <div className="mb-4">
                 <span className="text-white">nobody watching</span>,
               </div>
               <div className="mb-4">
-                Love like <span className="text-white">you'll never be hurt</span>,
+                Love like <span className="text-white">you&apos;ll never be hurt</span>,
               </div>
               <div className="mb-4">
-                Sing like <span className="text-white">there's nobody listening</span>,
+                Sing like <span className="text-white">there&apos;s nobody listening</span>,
               </div>
               <div>
-                And live like <span className="text-white">it's heaven on earth</span>
+                And live like <span className="text-white">it&apos;s heaven on earth</span>
               </div>
             </h1>
 

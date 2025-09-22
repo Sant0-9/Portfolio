@@ -219,7 +219,7 @@ export default function SplineScene({
       }
     }, 5000);
     return () => clearTimeout(timeout);
-  }, [isLoading, loaderId, markLoaderComplete]);
+  }, [isLoading, loaderId, markLoaderComplete, fallbackScene, triedFallback]);
 
   const LoadingFallback = () => (
     <div className="w-full h-full flex items-center justify-center">

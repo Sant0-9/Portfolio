@@ -1,6 +1,5 @@
 'use client';
 import Background from '../_ui/Background';
-import IntroGate from './IntroGate';
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -12,9 +11,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       {/* Three.js Stars Background */}
       <Background />
 
-      {/* Intro Gate - appears once per session */}
-      <IntroGate />
-
+      {/* Main content - IntroGate temporarily removed */}
       <div style={{ position: 'relative', zIndex: 1000 }}>
         <a href="#main" className="skip-link">
           Skip to main content

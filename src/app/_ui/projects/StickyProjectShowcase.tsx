@@ -25,7 +25,7 @@ export default function StickyProjectShowcase({ onOpenModal, onTagClick }: Stick
   };
 
   return (
-    <section className="py-20">
+    <section id="projects" className="py-20">
       {/* Header */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
         <motion.h2
