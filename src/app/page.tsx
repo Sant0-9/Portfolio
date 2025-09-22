@@ -150,14 +150,6 @@ export default function Home() {
         {/* Corner accent - moved to bottom left */}
         {isMounted && (
           <div className="absolute bottom-8 left-8 text-left z-20">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 2.5, duration: 0.8 }}
-              className="text-white/60 text-sm"
-            >
-              CS Student at UT Dallas
-            </motion.div>
           </div>
         )}
 
