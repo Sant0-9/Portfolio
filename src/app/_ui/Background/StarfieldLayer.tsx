@@ -1,6 +1,15 @@
 'use client';
 
-import { useState, useRef, Suspense, useEffect, forwardRef, useImperativeHandle, useCallback } from "react";
+import {
+  useState,
+  useRef,
+  Suspense,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+  useCallback,
+  useMemo
+} from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 // Import only the needed drei submodules to avoid pulling incompatible extras
 import { Points } from "@react-three/drei/core/Points";
@@ -17,17 +26,27 @@ interface StarsProps {
   rotationX?: MotionValue<number>;
   rotationY?: MotionValue<number>;
   speedMultiplier: number;
+  starCount: number;
+  pointSize: number;
+  autoRotationStrength: number;
 }
 
-const Stars = ({ rotationX, rotationY, speedMultiplier, ...props }: StarsProps) => {
+const Stars = ({
+  rotationX,
+  rotationY,
+  speedMultiplier,
+  starCount,
+  pointSize,
+  autoRotationStrength,
+  ...props
+}: StarsProps) => {
   const ref = useRef<any>();
-  const [sphere] = useState(() => {
-    // Optimized star count based on device capability
-    const starCount = window.innerWidth < 768 ? 500 : window.innerWidth < 1024 ? 1000 : 3500;
-    const positions = new Float32Array(starCount);
-    inSphere(positions, { radius: 1.2 });
-    return positions;
-  });
+  const positions = useMemo(() => {
+    const count = Math.max(50, Math.floor(starCount));
+    const buffer = new Float32Array(count * 3);
+    inSphere(buffer, { radius: 1.2 });
+    return buffer;
+  }, [starCount]);
   const [currentRotation, setCurrentRotation] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -48,10 +67,6 @@ const Stars = ({ rotationX, rotationY, speedMultiplier, ...props }: StarsProps) 
 
   useFrame((state, delta) => {
     if (ref.current) {
-      // Always apply scroll-based rotation, but throttle auto-rotation on mobile
-      const isMobile = window.innerWidth < 768;
-      const shouldSkipAutoRotation = isMobile && Math.floor(state.clock.elapsedTime * 60) % 2 !== 0;
-
       const adjustedDelta = delta * speedMultiplier;
       const time = state.clock.elapsedTime;
 
@@ -59,23 +74,24 @@ const Stars = ({ rotationX, rotationY, speedMultiplier, ...props }: StarsProps) 
       const baseRotationX = currentRotation.x;
       const baseRotationY = currentRotation.y;
 
-      // Add subtle auto-rotation (throttled on mobile)
-      const autoRotationX = shouldSkipAutoRotation ? 0 : Math.sin(time * 0.1 * speedMultiplier) * 0.03;
-      const autoRotationY = shouldSkipAutoRotation ? 0 : Math.cos(time * 0.15 * speedMultiplier) * 0.02;
+      // Add subtle auto-rotation scaled by device capability
+      const rotationStrength = Math.max(0, autoRotationStrength);
+      const autoRotationX = rotationStrength === 0 ? 0 : Math.sin(time * 0.1 * speedMultiplier) * 0.03 * rotationStrength;
+      const autoRotationY = rotationStrength === 0 ? 0 : Math.cos(time * 0.15 * speedMultiplier) * 0.02 * rotationStrength;
 
       ref.current.rotation.x = baseRotationX + autoRotationX;
       ref.current.rotation.y = baseRotationY + autoRotationY;
-      ref.current.rotation.z += adjustedDelta * 0.01;
+      ref.current.rotation.z += adjustedDelta * 0.01 * (0.5 + rotationStrength * 0.5);
     }
   });
 
   return (
     <group rotation={[0, 0, Math.PI / 4]}>
-      <Points ref={ref} positions={sphere} stride={3} frustumCulled={false} {...props}>
+      <Points ref={ref} positions={positions} stride={3} frustumCulled={false} {...props}>
         <PointMaterial
           transparent
           color='#f272c8'
-          size={0.002}
+          size={pointSize}
           sizeAttenuation={true}
           depthWrite={false}
         />
@@ -153,6 +169,73 @@ const StreakOverlay = ({ isVisible }: { isVisible: boolean }) => {
   );
 };
 
+type DevicePerformanceTier = 'reduced' | 'low' | 'medium' | 'high';
+
+const evaluateDeviceTier = (): DevicePerformanceTier => {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+    return 'high';
+  }
+
+  const prefersReducedMotion = typeof window.matchMedia === 'function'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false;
+  if (prefersReducedMotion) {
+    return 'reduced';
+  }
+
+  const cores = navigator.hardwareConcurrency ?? 4;
+  const memory = (navigator as any).deviceMemory ?? 8;
+  const isTouchDevice = 'maxTouchPoints' in navigator && navigator.maxTouchPoints > 1;
+  const smallViewport = Math.min(window.innerWidth, window.innerHeight) <= 480;
+
+  if (cores <= 2 || (memory && memory <= 2)) {
+    return 'low';
+  }
+
+  if (cores <= 4 || (memory && memory <= 4) || (isTouchDevice && smallViewport)) {
+    return 'medium';
+  }
+
+  return 'high';
+};
+
+const useDevicePerformanceTier = () => {
+  const [tier, setTier] = useState<DevicePerformanceTier>('high');
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const updateTier = () => setTier(evaluateDeviceTier());
+    const mediaQuery = typeof window.matchMedia === 'function'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)')
+      : null;
+
+    updateTier();
+    window.addEventListener('resize', updateTier);
+    const mediaListener = () => updateTier();
+    if (mediaQuery) {
+      if (typeof mediaQuery.addEventListener === 'function') {
+        mediaQuery.addEventListener('change', mediaListener);
+      } else if (typeof (mediaQuery as any).addListener === 'function') {
+        (mediaQuery as any).addListener(mediaListener);
+      }
+    }
+
+    return () => {
+      window.removeEventListener('resize', updateTier);
+      if (mediaQuery) {
+        if (typeof mediaQuery.removeEventListener === 'function') {
+          mediaQuery.removeEventListener('change', mediaListener);
+        } else if (typeof (mediaQuery as any).removeListener === 'function') {
+          (mediaQuery as any).removeListener(mediaListener);
+        }
+      }
+    };
+  }, []);
+
+  return tier;
+};
+
 const StarsCanvas = forwardRef<StarfieldHandle>((_props, ref) => {
   const { scrollYProgress } = useScroll({
     offset: ["start start", "end end"]
@@ -160,7 +243,6 @@ const StarsCanvas = forwardRef<StarfieldHandle>((_props, ref) => {
   const [speedMultiplier, setSpeedMultiplier] = useState(1);
   const [isWarping, setIsWarping] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const [isLowEndDevice, setIsLowEndDevice] = useState(false);
   const containerControls = useAnimationControls();
 
   const { registerLoader, markLoaderComplete } = useLoading();
@@ -169,18 +251,41 @@ const StarsCanvas = forwardRef<StarfieldHandle>((_props, ref) => {
   const rotationX = useTransform(scrollYProgress, [0, 1], [0, Math.PI * 0.8]);
   const rotationY = useTransform(scrollYProgress, [0, 1], [0, Math.PI * 0.6]);
 
-  // Detect low-end devices and disable heavy background
-  useEffect(() => {
-    const detectLowEndDevice = () => {
-      const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const isSlowDevice = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2;
-      const isSlowMemory = (navigator as any).deviceMemory && (navigator as any).deviceMemory <= 2;
+  const performanceTier = useDevicePerformanceTier();
+  const starfieldConfig = useMemo(() => {
+    switch (performanceTier) {
+      case 'low':
+        return {
+          starCount: 450,
+          pointSize: 0.0035,
+          autoRotationStrength: 0.25,
+          dpr: [1, 1.1] as [number, number],
+          warpCap: 3.5,
+          enableStreaks: false
+        };
+      case 'medium':
+        return {
+          starCount: 900,
+          pointSize: 0.0025,
+          autoRotationStrength: 0.6,
+          dpr: [1, 1.3] as [number, number],
+          warpCap: 5,
+          enableStreaks: true
+        };
+      case 'high':
+      default:
+        return {
+          starCount: 1500,
+          pointSize: 0.002,
+          autoRotationStrength: 1,
+          dpr: [1, 1.6] as [number, number],
+          warpCap: 6,
+          enableStreaks: true
+        };
+    }
+  }, [performanceTier]);
 
-      setIsLowEndDevice(isMobile || isSlowDevice || isSlowMemory);
-    };
-
-    detectLowEndDevice();
-  }, []);
+  const prefersReducedMotion = performanceTier === 'reduced';
 
   // Set mounted state after component mounts and register loader
   useEffect(() => {
@@ -203,11 +308,13 @@ const StarsCanvas = forwardRef<StarfieldHandle>((_props, ref) => {
     setIsWarping(true);
 
     try {
+      const cappedFactor = Math.min(factor, starfieldConfig.warpCap);
+
       // Phase 1: Ramp up (250ms)
       const rampUpPromise = new Promise<void>((resolve) => {
         let start = 1;
         let current = start;
-        const target = factor;
+        const target = cappedFactor;
         const duration = 250;
         const startTime = Date.now();
 
@@ -243,7 +350,7 @@ const StarsCanvas = forwardRef<StarfieldHandle>((_props, ref) => {
 
       // Phase 3: Ramp down (400ms)
       const rampDownPromise = new Promise<void>((resolve) => {
-        let start = factor;
+        let start = cappedFactor;
         let current = start;
         const target = 1;
         const duration = 400;
@@ -277,7 +384,7 @@ const StarsCanvas = forwardRef<StarfieldHandle>((_props, ref) => {
       setIsWarping(false);
       setSpeedMultiplier(1);
     }
-  }, [isWarping, containerControls, isMounted]);
+  }, [isWarping, containerControls, isMounted, starfieldConfig.warpCap]);
 
   useImperativeHandle(ref, () => ({
     warp: warpFunction
@@ -285,6 +392,9 @@ const StarsCanvas = forwardRef<StarfieldHandle>((_props, ref) => {
 
   // Listen for global starfield warp events
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
     const handleWarpEvent = (event: CustomEvent) => {
       const { factor, durationMs } = event.detail || {};
       warpFunction({ factor, durationMs });
@@ -297,14 +407,13 @@ const StarsCanvas = forwardRef<StarfieldHandle>((_props, ref) => {
     };
   }, [warpFunction]);
 
-  // Return simple CSS background for low-end devices
-  if (isLowEndDevice) {
+  if (prefersReducedMotion) {
     return (
       <div
         className='w-full h-screen fixed inset-0'
         style={{
           zIndex: -1000,
-          background: 'radial-gradient(ellipse at center, #0f0f23 0%, #000 100%)',
+          background: 'radial-gradient(ellipse at center, #090920 0%, #000 100%)',
           isolation: 'isolate',
           contain: 'layout style paint'
         }}
@@ -321,20 +430,27 @@ const StarsCanvas = forwardRef<StarfieldHandle>((_props, ref) => {
       <Canvas
         camera={{ position: [0, 0, 1] }}
         style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
-        dpr={[1, 1.5]} // Limit device pixel ratio for better performance
-        performance={{ min: 0.5 }} // Allow frame rate to drop for performance
-        frameloop="always" // Need continuous rendering for scroll effects
+        dpr={starfieldConfig.dpr}
+        performance={{ min: performanceTier === 'high' ? 0.7 : 0.4 }}
+        frameloop="always"
         gl={{
-          antialias: false, // Disable antialiasing for better performance
+          antialias: false,
           alpha: true,
-          powerPreference: "high-performance"
+          powerPreference: performanceTier === 'high' ? "high-performance" : "default"
         }}
       >
         <Suspense fallback={null}>
-          <Stars rotationX={rotationX} rotationY={rotationY} speedMultiplier={speedMultiplier} />
+          <Stars
+            rotationX={rotationX}
+            rotationY={rotationY}
+            speedMultiplier={speedMultiplier}
+            starCount={starfieldConfig.starCount}
+            pointSize={starfieldConfig.pointSize}
+            autoRotationStrength={starfieldConfig.autoRotationStrength}
+          />
         </Suspense>
       </Canvas>
-      <StreakOverlay isVisible={speedMultiplier > 1.2} />
+      <StreakOverlay isVisible={starfieldConfig.enableStreaks && speedMultiplier > 1.2} />
     </motion.div>
   );
 });
